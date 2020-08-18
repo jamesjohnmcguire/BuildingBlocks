@@ -5,7 +5,7 @@
 #include "chainblocker.h"
 #include "blockchain.h"
 
-extern "C" void WINAPI Testing()
+void Testing()
 {
 	cout << "Starting mining..." << endl;
 
