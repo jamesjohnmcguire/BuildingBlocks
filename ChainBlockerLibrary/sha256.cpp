@@ -136,7 +136,11 @@ std::string sha256(std::string input)
         int double_index = i * 2;
         char* buffer = buf + double_index;
         unsigned char item = digest[i];
+#ifdef WIN32
         sprintf_s(buffer, size, "%02x", item);
+#else
+        sprintf(buffer, "%02x", item);
+#endif
         size -= 2;
     }
 
