@@ -13,11 +13,16 @@ Blockchain::Blockchain()
 void Blockchain::AddBlock(Block newBlock)
 {
 	Block previous = GetLastBlock();
-	string prevoiusHash = previous.Hash;
-	newBlock.PrevHash = prevoiusHash;
+	string previousHash = previous.Hash;
+	newBlock.PreviousHash = previousHash;
 
 	newBlock.MineBlock(difficulty);
 	chain.push_back(newBlock);
+}
+
+void Blockchain::SaveBlock(Block block)
+{
+
 }
 
 Block Blockchain::GetLastBlock() const

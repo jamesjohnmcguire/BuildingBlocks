@@ -8,12 +8,17 @@ class Block
 {
 	public:
 		string Hash;
-		string PrevHash;
+		string PreviousHash;
 
-		Block(uint32_t nIndexIn, const string& sDataIn);
+		Block();
+		Block(uint32_t indexIn, const string& dataIn);
+		Block(
+			uint32_t indexIn,
+			const string& dataIn,
+			const string& previousHash);
 
 		string GetHash();
-		void MineBlock(uint32_t nDifficulty);
+		void MineBlock(uint32_t difficulty);
 
 	private:
 		string data;

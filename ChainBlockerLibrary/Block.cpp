@@ -5,8 +5,23 @@
 #include <time.h>
 #include <vector>
 
+Block::Block()
+{
+	index = 0;
+	nonce = -1;
+	workingTime = time(nullptr);
+}
+
 Block::Block(uint32_t indexIn, const string& dataIn)
 	: index(indexIn), data(dataIn)
+{
+	nonce = -1;
+	workingTime = time(nullptr);
+}
+
+Block::Block(
+	uint32_t indexIn, const string& dataIn, const string& previousHash)
+	: index(indexIn), data(dataIn), PreviousHash(previousHash)
 {
 	nonce = -1;
 	workingTime = time(nullptr);
@@ -19,6 +34,9 @@ string Block::GetHash()
 
 void Block::MineBlock(uint32_t difficulty)
 {
+	time_t start, end;
+	time(&start);
+
 	size_t size = (size_t)difficulty + 1;
 	vector<char> tempBuffer(size);
 
@@ -38,13 +56,23 @@ void Block::MineBlock(uint32_t difficulty)
 		testHash = hash.substr(0, difficulty);
 	} while (testHash != testBuffer);
 
+	time(&end);
+	double diff = difftime(end, start);
+	int totalSeconds = (int)diff;
+
+	int minutes = diff / 60;
+	int hours = minutes / 60;
+	int minutesRemainder = minutes % 60;
+	int secondsRemainder = totalSeconds % 60;
+
 	cout << "Block mined: " << hash << endl;
+	cout << "Time taken: " << hours << ":" << minutesRemainder << ":" << secondsRemainder << endl;
 }
 
 inline string Block::CalculateHash() const
 {
 	stringstream streamBuffer;
-	streamBuffer << index << workingTime << data << nonce << PrevHash;
+	streamBuffer << index << workingTime << data << nonce << PreviousHash;
 
 	string buffer = streamBuffer.str();
 	string hash =  sha256(buffer);

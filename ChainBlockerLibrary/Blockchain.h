@@ -9,7 +9,8 @@ class Blockchain
 	public:
 		Blockchain();
 
-		void AddBlock(Block bNew);
+		void AddBlock(Block newBlock);
+		void SaveBlock(Block block);
 
 	private:
 		uint32_t difficulty;
