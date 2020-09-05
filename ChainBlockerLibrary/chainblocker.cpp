@@ -15,6 +15,9 @@ void Testing()
 	Block block = Block(1, "Block 1 Data");
 	blockChain.AddBlock(block);
 
+	cout << "Saving block 1..." << endl;
+	blockChain.SaveBlock(block);
+
 	cout << "Mining block 2..." << endl;
 	block = Block(2, "Block 2 Data");
 	blockChain.AddBlock(block);

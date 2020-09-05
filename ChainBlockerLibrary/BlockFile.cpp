@@ -9,7 +9,6 @@ BlockFile::BlockFile(std::string fileName)
 
 void BlockFile::Write(Block block)
 {
-
     File.open(FileName, std::ios::binary | std::ios::out);
 
     if (File)

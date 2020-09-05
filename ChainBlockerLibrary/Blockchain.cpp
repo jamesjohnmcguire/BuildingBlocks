@@ -1,6 +1,7 @@
 #include "pch.h"
 
 #include "Blockchain.h"
+#include "BlockFile.h"
 
 Blockchain::Blockchain()
 {
@@ -8,6 +9,7 @@ Blockchain::Blockchain()
 
 	chain.emplace_back(genesis);
 	difficulty = 6;
+	difficulty = 4;
 }
 
 void Blockchain::AddBlock(Block newBlock)
@@ -22,7 +24,8 @@ void Blockchain::AddBlock(Block newBlock)
 
 void Blockchain::SaveBlock(Block block)
 {
-
+	BlockFile file = BlockFile(block.Name);
+	file.Write(block);
 }
 
 Block Blockchain::GetLastBlock() const

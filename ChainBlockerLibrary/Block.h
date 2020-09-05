@@ -1,3 +1,4 @@
+#pragma once
 #include <cstdint>
 #include <iostream>
 #include <sstream>
@@ -8,6 +9,7 @@ class Block
 {
 	public:
 		string Hash;
+		string Name;
 		string PreviousHash;
 
 		Block();

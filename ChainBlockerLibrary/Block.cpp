@@ -13,7 +13,7 @@ Block::Block()
 }
 
 Block::Block(uint32_t indexIn, const string& dataIn)
-	: index(indexIn), data(dataIn)
+	: index(indexIn), data(dataIn), Name(dataIn)
 {
 	nonce = -1;
 	workingTime = time(nullptr);
@@ -21,7 +21,7 @@ Block::Block(uint32_t indexIn, const string& dataIn)
 
 Block::Block(
 	uint32_t indexIn, const string& dataIn, const string& previousHash)
-	: index(indexIn), data(dataIn), PreviousHash(previousHash)
+	: index(indexIn), data(dataIn), Name(dataIn), PreviousHash(previousHash)
 {
 	nonce = -1;
 	workingTime = time(nullptr);
@@ -60,7 +60,7 @@ void Block::MineBlock(uint32_t difficulty)
 	double diff = difftime(end, start);
 	int totalSeconds = (int)diff;
 
-	int minutes = diff / 60;
+	int minutes = totalSeconds / 60;
 	int hours = minutes / 60;
 	int minutesRemainder = minutes % 60;
 	int secondsRemainder = totalSeconds % 60;
