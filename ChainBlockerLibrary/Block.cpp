@@ -9,14 +9,15 @@ Block::Block()
 {
 	index = 0;
 	nonce = -1;
-	workingTime = time(nullptr);
+
+	TimeStamp = time(nullptr);
 }
 
 Block::Block(uint32_t indexIn, const string& dataIn)
 	: index(indexIn), data(dataIn), Name(dataIn)
 {
 	nonce = -1;
-	workingTime = time(nullptr);
+	TimeStamp = time(nullptr);
 }
 
 Block::Block(
@@ -24,7 +25,7 @@ Block::Block(
 	: index(indexIn), data(dataIn), Name(dataIn), PreviousHash(previousHash)
 {
 	nonce = -1;
-	workingTime = time(nullptr);
+	TimeStamp = time(nullptr);
 }
 
 string Block::GetHash()
@@ -72,7 +73,7 @@ void Block::MineBlock(uint32_t difficulty)
 inline string Block::CalculateHash() const
 {
 	stringstream streamBuffer;
-	streamBuffer << index << workingTime << data << nonce << PreviousHash;
+	streamBuffer << index << TimeStamp << data << nonce << PreviousHash;
 
 	string buffer = streamBuffer.str();
 	string hash =  sha256(buffer);

@@ -12,6 +12,7 @@ class Blockchain
 
 		void AddBlock(Block newBlock);
 		void SaveBlock(Block block);
+		bool ValidateChain();
 
 	private:
 		uint32_t difficulty;

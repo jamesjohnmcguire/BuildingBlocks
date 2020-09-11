@@ -9,7 +9,7 @@ Blockchain::Blockchain()
 
 	chain.emplace_back(genesis);
 	difficulty = 6;
-	difficulty = 4;
+	difficulty = 2;
 }
 
 void Blockchain::AddBlock(Block newBlock)
@@ -26,6 +26,24 @@ void Blockchain::SaveBlock(Block block)
 {
 	BlockFile file = BlockFile(block.Name);
 	file.Write(block);
+}
+
+bool Blockchain::ValidateChain()
+{
+	string testPreviousHash;
+
+	for (Block block : chain)
+	{
+		string testHash = block.CalculateHash();
+
+		if ((testHash != block.Hash) ||
+			(testPreviousHash != block.PreviousHash))
+		{
+			return false;
+		}
+	}
+
+	return true;
 }
 
 Block Blockchain::GetLastBlock() const
