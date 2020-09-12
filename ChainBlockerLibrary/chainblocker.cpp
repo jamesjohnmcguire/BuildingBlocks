@@ -4,9 +4,14 @@
 
 #include "chainblocker.h"
 #include "blockchain.h"
+#include "wallet.h"
 
 void Testing()
 {
+	cout << "Getting wallet..." << endl;
+	Wallet wallet = Wallet();
+	wallet.GenerateKeyPair();
+
 	cout << "Starting mining..." << endl;
 
 	Blockchain blockChain = Blockchain();
