@@ -12,6 +12,21 @@
       "ctestCommandArgs": "",
       "variables": [],
       "cmakeToolchain": ""
+    },
+    {
+      "name": "WSL-GCC-Debug",
+      "generator": "Ninja",
+      "configurationType": "Debug",
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "installRoot": "${projectDir}\\out\\install\\${name}",
+      "cmakeExecutable": "cmake",
+      "cmakeCommandArgs": "-DCMAKE_TOOLCHAIN_FILE=/mnt/c/Users/JamesMc/Data/Clients/DigitalZenWorks/vcpkg/scripts/buildsystems/vcpkg.cmake -DOPENSSL_ROOT_DIR=\"/mnt/c/Users/JamesMc/Data/Clients/DigitalZenWorks/vcpkg/installed/x64-windows\"",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "linux_x64" ],
+      "wslPath": "${defaultWSLPath}",
+      "addressSanitizerRuntimeFlags": "detect_leaks=0",
+      "variables": []
     }
   ]
 }

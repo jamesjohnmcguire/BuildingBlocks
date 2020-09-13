@@ -30,8 +30,10 @@
 #else
 	#if __GNUC__ >= 4
 		#define EXPORT_API extern "C" __attribute__ ((visibility ("default")))
+		#define LIB_API(RetType) RetType
 	#else
 		#define EXPORT_API
+		#define LIB_API(RetType) RetType
 	#endif
 #endif
 

@@ -5,6 +5,8 @@ cmake_minimum_required (VERSION 3.8)
 
 include (GenerateExportHeader)
 
+add_compile_definitions(DLL_EXPORTS)
+
 find_package(OpenSSL REQUIRED)
 
 IF (WIN32)

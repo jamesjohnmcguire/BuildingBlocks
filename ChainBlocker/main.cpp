@@ -2,7 +2,7 @@
 //
 
 #include <iostream>
-#include "..\ChainBlockerLibrary\chainblocker.h"
+#include "../ChainBlockerLibrary/chainblocker.h"
 
 int main()
 {

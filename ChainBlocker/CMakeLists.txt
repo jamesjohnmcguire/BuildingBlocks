@@ -7,5 +7,3 @@ cmake_minimum_required (VERSION 3.8)
 add_executable (ChainBlocker "main.cpp")
 
 target_link_libraries (ChainBlocker ChainBlockerLibrary)
-
-# TODO: Add tests and install targets if needed.
