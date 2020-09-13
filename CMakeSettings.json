@@ -1,0 +1,17 @@
+﻿{
+  "configurations": [
+    {
+      "name": "x64-Debug",
+      "generator": "Ninja",
+      "configurationType": "Debug",
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "installRoot": "${projectDir}\\out\\install\\${name}",
+      "cmakeCommandArgs": "-DCMAKE_TOOLCHAIN_FILE=C:/Users/JamesMc/Data/Clients/DigitalZenWorks/vcpkg/scripts/buildsystems/vcpkg.cmake -DOPENSSL_ROOT_DIR=\"C:/Users/JamesMc/Data/Clients/DigitalZenWorks/vcpkg/installed/x64-windows\"",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "variables": [],
+      "cmakeToolchain": ""
+    }
+  ]
+}
