@@ -10,7 +10,6 @@ void Testing()
 {
 	cout << "Getting wallet..." << endl;
 	Wallet wallet = Wallet();
-	wallet.GenerateKeyPair();
 
 	cout << "Starting mining..." << endl;
 
