@@ -4,6 +4,7 @@
 #include "Wallet.h"
 
 Wallet::Wallet()
+	: privateKey(nullptr), publicKey(nullptr)
 {
 	Cryptography cryptography = Cryptography();
 

@@ -7,26 +7,26 @@
 
 using namespace std;
 
-class DllExport Block
+class Block
 {
 	public:
 		string Hash;
 		string Name;
 		string PreviousHash;
 
-		Block();
-		Block(
+		DllExport Block();
+		DllExport Block(
 			uint32_t indexIn,
 			const string& dataIn);
-		Block(
+		DllExport Block(
 			uint32_t indexIn,
 			const string& dataIn,
 			const string& previousHash);
 
-		string CalculateHash() const;
-		string GetHash();
-		time_t GetTimeStamp();
-		void MineBlock(uint32_t difficulty);
+		DllExport string CalculateHash() const;
+		DllExport string GetHash();
+		DllExport time_t GetTimeStamp();
+		DllExport void MineBlock(uint32_t difficulty);
 
 	private:
 		string data;
