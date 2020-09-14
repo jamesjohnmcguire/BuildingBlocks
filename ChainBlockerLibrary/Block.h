@@ -3,16 +3,16 @@
 #include<ctime>
 #include <iostream>
 #include <sstream>
+#include "chainblocker.h"
 
 using namespace std;
 
-class Block
+class DllExport Block
 {
 	public:
 		string Hash;
 		string Name;
 		string PreviousHash;
-		time_t TimeStamp;
 
 		Block();
 		Block(
@@ -25,6 +25,7 @@ class Block
 
 		string CalculateHash() const;
 		string GetHash();
+		time_t GetTimeStamp();
 		void MineBlock(uint32_t difficulty);
 
 	private:
@@ -32,4 +33,5 @@ class Block
 		string hash;
 		uint32_t index;
 		int64_t nonce;
+		time_t timeStamp;
 };

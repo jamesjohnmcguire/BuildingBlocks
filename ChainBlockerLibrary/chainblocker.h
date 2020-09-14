@@ -4,6 +4,7 @@
 	#ifdef DLL_EXPORTS
 		#if defined WIN32
 			#define LIB_API(RetType) extern "C" __declspec(dllexport) RetType
+			#define DllExport __declspec(dllexport)
 		#else
 			#define LIB_API(RetType) extern "C" RetType __attribute__((visibility("default")))
 		#endif
@@ -15,6 +16,8 @@
 			#define EXPORT_API extern "C" __declspec (dllexport)
 		#endif
 	#else
+		#define DllExport
+
 		#if defined WIN32
 			#define LIB_API(RetType) extern "C" __declspec(dllimport) RetType
 		#else
