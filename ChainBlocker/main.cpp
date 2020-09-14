@@ -2,10 +2,21 @@
 //
 
 #include <iostream>
+
+#ifdef WIN32
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#endif
+
 #include "../ChainBlockerLibrary/chainblocker.h"
 
 int main()
 {
 	std::cout << "Starting application\n";
 	Testing();
+
+#ifdef WIN32
+	_CrtDumpMemoryLeaks();
+#endif
 }
