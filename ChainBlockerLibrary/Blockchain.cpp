@@ -1,5 +1,4 @@
 #include "pch.h"
-
 #include "Blockchain.h"
 #include "BlockFile.h"
 
@@ -15,8 +14,8 @@ Blockchain::Blockchain()
 void Blockchain::AddBlock(Block newBlock)
 {
 	Block previous = GetLastBlock();
-	string previousHash = previous.Hash;
-	newBlock.PreviousHash = previousHash;
+	string previousHash = previous.GetHash();
+	newBlock.SetHash(previousHash);
 
 	newBlock.MineBlock(difficulty);
 	chain.push_back(newBlock);
@@ -24,7 +23,8 @@ void Blockchain::AddBlock(Block newBlock)
 
 void Blockchain::SaveBlock(Block block)
 {
-	BlockFile file = BlockFile(block.Name);
+	string name = block.GetName();
+	BlockFile file = BlockFile(name);
 	file.Write(block);
 }
 
@@ -36,8 +36,11 @@ bool Blockchain::ValidateChain()
 	{
 		string testHash = block.CalculateHash();
 
-		if ((testHash != block.Hash) ||
-			(testPreviousHash != block.PreviousHash))
+		string blockHash = block.GetHash();
+		string previousHash = block.GetPreviousHash();
+
+		if ((testHash != blockHash) ||
+			(testPreviousHash != previousHash))
 		{
 			return false;
 		}

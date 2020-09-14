@@ -14,7 +14,7 @@ Block::Block()
 }
 
 Block::Block(uint32_t indexIn, const string& dataIn)
-	: index(indexIn), data(dataIn), Name(dataIn)
+	: index(indexIn), data(dataIn), name(dataIn)
 {
 	nonce = -1;
 	timeStamp = time(nullptr);
@@ -22,18 +22,38 @@ Block::Block(uint32_t indexIn, const string& dataIn)
 
 Block::Block(
 	uint32_t indexIn, const string& dataIn, const string& previousHash)
-	: index(indexIn), data(dataIn), Name(dataIn), PreviousHash(previousHash)
+	: index(indexIn), data(dataIn), name(dataIn), previousHash(previousHash)
 {
 	nonce = -1;
 	timeStamp = time(nullptr);
 }
 
-string Block::GetHash()
+inline string Block::CalculateHash() const
+{
+	stringstream streamBuffer;
+	streamBuffer << index << timeStamp << data << nonce << previousHash;
+
+	string buffer = streamBuffer.str();
+	string hash = sha256(buffer);
+	return hash;
+}
+
+string Block::GetHash() const
 {
 	return hash;
 }
 
-time_t Block::GetTimeStamp()
+string Block::GetName() const
+{
+	return name;
+}
+
+string Block::GetPreviousHash() const
+{
+	return previousHash;
+}
+
+time_t Block::GetTimeStamp() const
 {
 	return timeStamp;
 }
@@ -75,12 +95,7 @@ void Block::MineBlock(uint32_t difficulty)
 	cout << "Time taken: " << hours << ":" << minutesRemainder << ":" << secondsRemainder << endl;
 }
 
-inline string Block::CalculateHash() const
+void Block::SetHash(string hash)
 {
-	stringstream streamBuffer;
-	streamBuffer << index << timeStamp << data << nonce << PreviousHash;
-
-	string buffer = streamBuffer.str();
-	string hash =  sha256(buffer);
-	return hash;
+	this->hash = hash;
 }

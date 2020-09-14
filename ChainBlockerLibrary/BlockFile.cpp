@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "BlockFile.h"
 
-BlockFile::BlockFile(std::string fileName)
+BlockFile::BlockFile(string fileName)
     : FileName(fileName)
 {
 

@@ -1,7 +1,10 @@
 #pragma once
+
 #include <fstream>
 #include <string>
 #include "Block.h"
+
+using namespace std;
 
 class BlockFile
 {
@@ -10,7 +13,7 @@ class BlockFile
         std::fstream File;
 
     public:
-        BlockFile(std::string FileName);
+        BlockFile(string FileName);
         void Write(Block block);
         Block Read();
 };
