@@ -63,14 +63,13 @@ void Block::MineBlock(uint32_t difficulty)
 	time_t start, end;
 	time(&start);
 
-	size_t size = (size_t)difficulty + 1;
+	size_t size = (size_t)difficulty;
 	vector<char> tempBuffer(size);
 
 	for (uint32_t i = 0; i < difficulty; ++i)
 	{
 		tempBuffer[i] = '0';
 	}
-	tempBuffer[difficulty] = '\0';
 
 	string testBuffer(tempBuffer.begin(), tempBuffer.end());
 	string testHash;
@@ -80,7 +79,8 @@ void Block::MineBlock(uint32_t difficulty)
 		nonce++;
 		hash = CalculateHash();
 		testHash = hash.substr(0, difficulty);
-	} while (testHash != testBuffer);
+	}
+	while (testHash != testBuffer);
 
 	time(&end);
 	double diff = difftime(end, start);
