@@ -144,5 +144,7 @@ std::string sha256(std::string input)
         size -= 2;
     }
 
-    return std::string(buf);
+	std::string sha = std::string(buf);
+
+	return sha;
 }
