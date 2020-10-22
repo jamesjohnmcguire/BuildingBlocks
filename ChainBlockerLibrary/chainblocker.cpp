@@ -4,9 +4,9 @@
 
 #include "chainblocker.h"
 
-#include "blockchain.h"
-#include "cryptography.h"
-#include "wallet.h"
+#include "Blockchain.h"
+#include "Cryptography.h"
+#include "Wallet.h"
 
 std::string privateKey = "-----BEGIN RSA PRIVATE KEY-----\n"\
 "MIIEowIBAAKCAQEAy8Dbv8prpJ/0kKhlGeJYozo2t60EG8L0561g13R29LvMR5hy\n"\
