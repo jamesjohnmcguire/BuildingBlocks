@@ -6,19 +6,22 @@
 #include <openssl/pem.h>
 #include <openssl/rsa.h>
 
+#include "chainblocker.h"
 #include "CryptographicKeyPair.h"
+
+using namespace std;
 
 class Cryptography
 {
 	public:
-		CryptographicKeyPair* CreateKeyPair();
-		unsigned char* SignData(
+		DllExport CryptographicKeyPair* CreateKeyPair();
+		DllExport unsigned char* SignData(
 			RSA* privateKey,
 			const unsigned char* data,
 			size_t dataLength,
 			size_t* outputLength);
-		char* SignMessage(std::string privateKey, std::string plainText);
-		bool VerifySignature(
+		DllExport char* SignMessage(std::string privateKey, std::string plainText);
+		DllExport bool VerifySignature(
 			std::string publicKey,
 			std::string plainText,
 			char* signatureBase64);
@@ -28,7 +31,7 @@ class Cryptography
 			const char* input,
 			size_t length,
 			size_t* outputLength);
-		char* Base64Encode(const unsigned char* input, int length);
+		char* Base64Encode(const unsigned char* input, size_t length);
 		BIO* CreateKey(RSA* rsa, bool isPublicKey);
 		char* CreatePemKey(BIO* key);
 		RSA* GenerateRsaKey();

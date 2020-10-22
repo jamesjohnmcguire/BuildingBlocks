@@ -2,14 +2,17 @@
 #include "Cryptography.h"
 
 unsigned char* Cryptography::Base64Decode(
-	const char* input, size_t length, size_t* outputLength)
+	const char* input, size_t inputLength, size_t* outputLength)
 {
-	const size_t decodeLength = 3 * length / 4;
-	unsigned char* output = reinterpret_cast<unsigned char*>(calloc(decodeLength, 1));
-	const unsigned char* inputBuffer = reinterpret_cast<const unsigned char*>(input);
+	const unsigned char* inputBuffer =
+		reinterpret_cast<const unsigned char*>(input);
 
-	int decodelength = static_cast<int>(length);
-	int actualLength = EVP_DecodeBlock(output, inputBuffer, decodelength);
+	const size_t bufferLength = 3 * inputLength / 4;
+	unsigned char* output =
+		reinterpret_cast<unsigned char*>(calloc(bufferLength, 1));
+
+	int decodeLength = static_cast<int>(inputLength);
+	int actualLength = EVP_DecodeBlock(output, inputBuffer, decodeLength);
 
 	if (decodeLength != *outputLength)
 	{
@@ -17,20 +20,27 @@ unsigned char* Cryptography::Base64Decode(
 	}
 
 	// remove null terminators
-	*outputLength = actualLength - 2;
+	size_t modifiedLength = actualLength;
+	*outputLength = modifiedLength - 2;
 
 	return output;
 }
 
-char* Cryptography::Base64Encode(const unsigned char* input, int length)
+char* Cryptography::Base64Encode(
+	const unsigned char* input, size_t inputLength)
 {
-	const int encodeLength = 4 * ((length + 2) / 3);
+	size_t encodeLength = 4 * ((inputLength + 2) / 3);
 
 	// +1 for the terminating null
-	size_t bufferLength = (size_t)encodeLength + 1;
-	char* output = reinterpret_cast<char*>(calloc(bufferLength, 1));
+	encodeLength = encodeLength + 1;
+
+	char* output = reinterpret_cast<char*>(calloc(encodeLength, 1));
 	unsigned char* encodeBuffer = reinterpret_cast<unsigned char*>(output);
-	const int outputLength = EVP_EncodeBlock(encodeBuffer, input, length);
+
+	int bufferLength = static_cast<int>(inputLength);
+	int outputLength =
+		EVP_EncodeBlock(encodeBuffer, input, bufferLength);
+
 	if (encodeLength != outputLength)
 	{
 		// log warning
