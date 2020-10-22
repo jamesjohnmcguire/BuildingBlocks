@@ -5,17 +5,19 @@ unsigned char* Cryptography::Base64Decode(
 	const char* input, size_t length, size_t* outputLength)
 {
 	const size_t decodeLength = 3 * length / 4;
-	size_t bufferLength = (size_t)decodeLength + 1;
-	unsigned char* output = reinterpret_cast<unsigned char*>(calloc(bufferLength, 1));
+	unsigned char* output = reinterpret_cast<unsigned char*>(calloc(decodeLength, 1));
 	const unsigned char* inputBuffer = reinterpret_cast<const unsigned char*>(input);
 
 	int decodelength = static_cast<int>(length);
-	*outputLength = EVP_DecodeBlock(output, inputBuffer, decodelength);
+	int actualLength = EVP_DecodeBlock(output, inputBuffer, decodelength);
 
 	if (decodeLength != *outputLength)
 	{
 		// log warning
 	}
+
+	// remove null terminators
+	*outputLength = actualLength - 2;
 
 	return output;
 }
@@ -114,8 +116,8 @@ unsigned char* Cryptography::SignData(
 
 			if (successCode > 0)
 			{
-				unsigned char* output = (unsigned char*)malloc(*outputLength);
-				successCode = EVP_DigestSignFinal(context, output, outputLength);
+				signedData = (unsigned char*)malloc(*outputLength);
+				successCode = EVP_DigestSignFinal(context, signedData, outputLength);
 			}
 		}
 	}
