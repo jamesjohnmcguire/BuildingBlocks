@@ -52,7 +52,7 @@ void Testing()
 	Cryptography cryptography = Cryptography();
 
 	std::string plainText = "My secret message.\n";
-	char* signature = cryptography.SignMessage(privateKey, plainText);
+	char* signature = cryptography.SignData(privateKey, plainText);
 	bool authentic = cryptography.VerifySignature(publicKey, "My secret message.\n", signature);
 
 	cout << "Getting wallet..." << endl;

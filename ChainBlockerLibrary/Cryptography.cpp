@@ -1,6 +1,96 @@
 #include "pch.h"
 #include "Cryptography.h"
 
+// caller is responsible for freeing returned data.
+CryptographicKeyPair* Cryptography::CreateKeyPair()
+{
+	CryptographicKeyPair* keyPair = NULL;
+
+	RSA* rsa = CreateRsaKey();
+
+	if (rsa != NULL)
+	{
+		bool verified;
+		keyPair = new CryptographicKeyPair;
+
+		if (keyPair != NULL)
+		{
+			BIO* privateKey = CreateKey(rsa, false);
+
+			if (privateKey != NULL)
+			{
+				char* privateKeyPem = CreatePemKey(privateKey);
+
+				if (privateKeyPem != NULL)
+				{
+					verified = VerifyKey(privateKeyPem, false);
+					free(privateKeyPem);
+
+					keyPair->PrivateKey = privateKey;
+				}
+			}
+
+			BIO* publicKey = CreateKey(rsa, true);
+
+			if (publicKey != NULL)
+			{
+				char* publicKeyPem = CreatePemKey(publicKey);
+
+				if (publicKeyPem != NULL)
+				{
+					verified = VerifyKey(publicKeyPem, true);
+					free(publicKeyPem);
+
+					keyPair->PublicKey = publicKey;
+				}
+			}
+
+			RSA_free(rsa);
+		}
+	}
+
+	return keyPair;
+}
+
+char* Cryptography::SignData(std::string privateKey, std::string plainText)
+{
+	char* output = nullptr;
+	size_t outputLength;
+
+	RSA* privateRsaKey = GetRsaPrivateKey(privateKey);
+
+	unsigned char* data = (unsigned char*)plainText.c_str();
+	size_t dataLength = plainText.length();
+
+	unsigned char* signedData =
+		SignData(privateRsaKey, data, dataLength, &outputLength);
+
+	output = Base64Encode(signedData, outputLength);
+
+	return output;
+}
+
+bool Cryptography::VerifySignature(
+	std::string publicKey,
+	std::string plainText,
+	char* signatureBase64)
+{
+	size_t inputLength = strlen(signatureBase64);
+	size_t outputLength;
+
+	RSA* publicRSA = GetRsaPublicKey(publicKey);
+	unsigned char* encMessage =
+		Base64Decode(signatureBase64, inputLength, &outputLength);
+
+	unsigned char* input = (unsigned char*)plainText.c_str();
+	inputLength = plainText.length();
+
+	bool result = VerifySignature(
+		publicRSA, input, inputLength, encMessage, outputLength);
+
+	return result;
+}
+
 unsigned char* Cryptography::Base64Decode(
 	const char* input, size_t inputLength, size_t* outputLength)
 {
@@ -49,112 +139,6 @@ char* Cryptography::Base64Encode(
 	return output;
 }
 
-// caller is responsible for freeing returned data.
-CryptographicKeyPair* Cryptography::CreateKeyPair()
-{
-	CryptographicKeyPair* keyPair = NULL;
-
-	RSA* rsa = GenerateRsaKey();
-
-	if (rsa != NULL)
-	{
-		bool verified;
-		keyPair = new CryptographicKeyPair;
-
-		if (keyPair != NULL)
-		{
-			BIO* privateKey = CreateKey(rsa, false);
-
-			if (privateKey != NULL)
-			{
-				char* privateKeyPem = CreatePemKey(privateKey);
-
-				if (privateKeyPem != NULL)
-				{
-					verified = VerifyKey(privateKeyPem, false);
-					free(privateKeyPem);
-
-					keyPair->PrivateKey = privateKey;
-				}
-			}
-
-			BIO* publicKey = CreateKey(rsa, true);
-
-			if (publicKey != NULL)
-			{
-				char* publicKeyPem = CreatePemKey(publicKey);
-
-				if (publicKeyPem != NULL)
-				{
-					verified = VerifyKey(publicKeyPem, true);
-					free(publicKeyPem);
-
-					keyPair->PublicKey = publicKey;
-				}
-			}
-
-			RSA_free(rsa);
-		}
-	}
-
-	return keyPair;
-}
-
-// caller is responsible for freeing returned data.
-unsigned char* Cryptography::SignData(
-	RSA* privateKey,
-	const unsigned char* data,
-	size_t dataLength,
-	size_t* outputLength)
-{
-	unsigned char* signedData = NULL;
-
-	EVP_MD_CTX* context = EVP_MD_CTX_create();
-	EVP_PKEY* evpPrivateKey = EVP_PKEY_new();
-	EVP_PKEY_assign_RSA(evpPrivateKey, privateKey);
-
-	int successCode = EVP_DigestSignInit(
-		context, NULL, EVP_sha256(), NULL, evpPrivateKey);
-
-	if (successCode > 0)
-	{
-		successCode = EVP_DigestSignUpdate(context, data, dataLength);
-
-		if (successCode > 0)
-		{
-			successCode = EVP_DigestSignFinal(context, NULL, outputLength);
-
-			if (successCode > 0)
-			{
-				signedData = (unsigned char*)malloc(*outputLength);
-				successCode = EVP_DigestSignFinal(context, signedData, outputLength);
-			}
-		}
-	}
-
-	EVP_MD_CTX_free(context);
-
-	return signedData;
-}
-
-char* Cryptography::SignMessage(std::string privateKey, std::string plainText)
-{
-	char* output = nullptr;
-	size_t outputLength;
-
-	RSA* privateRsaKey = GetRsaPrivateKey(privateKey);
-
-	unsigned char* data = (unsigned char*)plainText.c_str();
-	size_t dataLength = plainText.length();
-
-	unsigned char* signedData =
-		SignData(privateRsaKey, data, dataLength, &outputLength);
-
-	output = Base64Encode(signedData, outputLength);
-
-	return output;
-}
-
 BIO* Cryptography::CreateKey(RSA* rsa, bool isPublicKey)
 {
     int successCode;
@@ -193,7 +177,7 @@ char* Cryptography::CreatePemKey(BIO* key)
     return keyPem;
 }
 
-RSA* Cryptography::GenerateRsaKey()
+RSA* Cryptography::CreateRsaKey()
 {
     RSA* rsaKey = nullptr;
     BIGNUM* bigNumber = nullptr;
@@ -256,6 +240,43 @@ RSA* Cryptography::GetRsaPublicKey(std::string publicKey)
 	}
 
 	return rsaKey;
+}
+
+// caller is responsible for freeing returned data.
+unsigned char* Cryptography::SignData(
+	RSA* privateKey,
+	const unsigned char* data,
+	size_t dataLength,
+	size_t* outputLength)
+{
+	unsigned char* signedData = NULL;
+
+	EVP_MD_CTX* context = EVP_MD_CTX_create();
+	EVP_PKEY* evpPrivateKey = EVP_PKEY_new();
+	EVP_PKEY_assign_RSA(evpPrivateKey, privateKey);
+
+	int successCode = EVP_DigestSignInit(
+		context, NULL, EVP_sha256(), NULL, evpPrivateKey);
+
+	if (successCode > 0)
+	{
+		successCode = EVP_DigestSignUpdate(context, data, dataLength);
+
+		if (successCode > 0)
+		{
+			successCode = EVP_DigestSignFinal(context, NULL, outputLength);
+
+			if (successCode > 0)
+			{
+				signedData = (unsigned char*)malloc(*outputLength);
+				successCode = EVP_DigestSignFinal(context, signedData, outputLength);
+			}
+		}
+	}
+
+	EVP_MD_CTX_free(context);
+
+	return signedData;
 }
 
 bool Cryptography::VerifyKey(char* pemKey, bool isPublicKey)
@@ -327,25 +348,4 @@ bool Cryptography::VerifySignature(
 	EVP_MD_CTX_free(context);
 
 	return verified;
-}
-
-bool Cryptography::VerifySignature(
-	std::string publicKey,
-	std::string plainText,
-	char* signatureBase64)
-{
-	size_t inputLength = strlen(signatureBase64);
-	size_t outputLength;
-
-	RSA* publicRSA = GetRsaPublicKey(publicKey);
-	unsigned char* encMessage =
-		Base64Decode(signatureBase64, inputLength, &outputLength);
-
-	unsigned char* input = (unsigned char* )plainText.c_str();
-	inputLength = plainText.length();
-
-	bool result = VerifySignature(
-		publicRSA, input, inputLength, encMessage, outputLength);
-
-	return result;
 }

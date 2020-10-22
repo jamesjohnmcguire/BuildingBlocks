@@ -15,12 +15,7 @@ class Cryptography
 {
 	public:
 		DllExport CryptographicKeyPair* CreateKeyPair();
-		DllExport unsigned char* SignData(
-			RSA* privateKey,
-			const unsigned char* data,
-			size_t dataLength,
-			size_t* outputLength);
-		DllExport char* SignMessage(std::string privateKey, std::string plainText);
+		DllExport char* SignData(std::string privateKey, std::string plainText);
 		DllExport bool VerifySignature(
 			std::string publicKey,
 			std::string plainText,
@@ -34,10 +29,15 @@ class Cryptography
 		char* Base64Encode(const unsigned char* input, size_t length);
 		BIO* CreateKey(RSA* rsa, bool isPublicKey);
 		char* CreatePemKey(BIO* key);
-		RSA* GenerateRsaKey();
+		RSA* CreateRsaKey();
 		RSA* GetRsaPrivateKey(BIO* bioKey);
 		RSA* GetRsaPrivateKey(std::string privateKey);
 		RSA* GetRsaPublicKey(std::string publicKey);
+		unsigned char* SignData(
+			RSA* privateKey,
+			const unsigned char* data,
+			size_t dataLength,
+			size_t* outputLength);
 		bool VerifyKey(char* pemKey, bool isPublicKey);
 		bool VerifySignature(RSA* publicKey,
 			const unsigned char* data,
