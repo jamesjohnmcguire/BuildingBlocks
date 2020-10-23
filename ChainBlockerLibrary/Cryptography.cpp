@@ -57,7 +57,7 @@ char* Cryptography::SignData(std::string privateKey, std::string plainText)
 	char* output = nullptr;
 	size_t outputLength;
 
-	RsaPointer privateRsaKey = GetRsaPrivateKey(privateKey);
+	RSA* privateRsaKey = GetRsaPrivateKey(privateKey);
 
 	unsigned char* data = (unsigned char*)plainText.c_str();
 	size_t dataLength = plainText.length();
@@ -147,35 +147,6 @@ char* Cryptography::Base64Encode(
 	return output;
 }
 
-BioPointer Cryptography::CreateKey()
-{
-	BioPointer test = nullptr;
-
-	RsaPointer rsa = CreateRsaKeyNew();
-
-	if (rsa != nullptr)
-	{
-		int successCode;
-//		BIO* key = BIO_new(BIO_s_mem());
-
-	//	// unique_ptr<BIO*> test = BIO_new(BIO_s_mem());
-
-	//	successCode = PEM_write_bio_RSAPublicKey(key, rsa);
-
-	//	if (successCode != 1)
-	//	{
-	//		BIO_free_all(key);
-	//	}
-	//	else
-	//	{
-	//		test = bio_ptr(key);
-	//	}
-		rsa = nullptr;
-	}
-
-	return test;
-}
-
 BIO* Cryptography::CreateKey(RSA* rsa, bool isPublicKey)
 {
     int successCode;
@@ -227,10 +198,8 @@ RSA* Cryptography::CreateRsaKey()
     if (successCode == 1)
     {
 		rsaKey = RSA_new();
-//		RsaPointer test = RsaPointer(rsaKey);
-		RsaPointer bp(RSA_new());
 
-	//        successCode = RSA_generate_key_ex(rsaKey, bits, bigNumber, nullptr);
+		successCode = RSA_generate_key_ex(rsaKey, bits, bigNumber, nullptr);
 
         if (successCode != 1)
         {
@@ -245,45 +214,16 @@ RSA* Cryptography::CreateRsaKey()
     return rsaKey;
 }
 
-RsaPointer Cryptography::CreateRsaKeyNew()
+RSA* Cryptography::GetRsaPrivateKey(std::string privateKey)
 {
-	RsaPointer rsaKey = nullptr;
-	BIGNUM* bigNumber = nullptr;
-	unsigned long algorythmType = RSA_F4;
-	int bits = 2048;
-
-	bigNumber = BN_new();
-	int successCode = BN_set_word(bigNumber, algorythmType);
-
-	if (successCode == 1)
-	{
-		RSA* rsa = RSA_new();
-
-		successCode = RSA_generate_key_ex(rsa, bits, bigNumber, nullptr);
-
-		if (successCode == 1)
-		{
-			RsaPointer rsaKey(rsa);
-		}
-	}
-
-	BN_free(bigNumber);
-	bigNumber = nullptr;
-
-	return rsaKey;
-}
-
-RsaPointer Cryptography::GetRsaPrivateKey(std::string privateKey)
-{
-	RsaPointer rsaKey = nullptr;
+	RSA* rsaKey = nullptr;
 
 	const char* string = privateKey.c_str();
 	BIO* bioKey = BIO_new_mem_buf((void*)string, -1);
 
 	if (bioKey != nullptr)
 	{
-		RSA* rsa = PEM_read_bio_RSAPrivateKey(bioKey, &rsa, nullptr, nullptr);
-		rsaKey(rsa);
+		rsaKey = PEM_read_bio_RSAPrivateKey(bioKey, &rsaKey, nullptr, nullptr);
 	}
 
 	return rsaKey;
@@ -306,7 +246,7 @@ RSA* Cryptography::GetRsaPublicKey(std::string publicKey)
 
 // caller is responsible for freeing returned data.
 unsigned char* Cryptography::RsaSignData(
-	RsaPointer privateKey,
+	RSA* privateKey,
 	const unsigned char* data,
 	size_t dataLength,
 	size_t* outputLength)

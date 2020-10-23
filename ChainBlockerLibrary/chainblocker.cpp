@@ -4,9 +4,9 @@
 
 #include "chainblocker.h"
 
-#include "blockchain.h"
-#include "cryptography.h"
-#include "wallet.h"
+#include "Blockchain.h"
+#include "Cryptography.h"
+#include "Wallet.h"
 
 void Testing()
 {
@@ -51,31 +51,29 @@ void Testing()
 	cout << "Testing message signing..." << endl;
 	Cryptography cryptography = Cryptography();
 
-	//std::string plainText = "My secret message.\n";
-	//char* signature = cryptography.SignData(privateKey, plainText);
-	//bool authentic = cryptography.VerifySignature(publicKey, "My secret message.\n", signature);
-
-	auto test = cryptography.CreateKey();
+	std::string plainText = "My secret message.\n";
+	char* signature = cryptography.SignData(privateKey, plainText);
+	bool authentic = cryptography.VerifySignature(publicKey, "My secret message.\n", signature);
 
 	cout << "Getting wallet..." << endl;
-	//Wallet wallet = Wallet();
+	Wallet wallet = Wallet();
 
-	//cout << "Starting mining..." << endl;
+	cout << "Starting mining..." << endl;
 
-	//Blockchain blockChain = Blockchain();
+	Blockchain blockChain = Blockchain();
 
-	//cout << "Mining block 1..." << endl;
-	//Block block = Block(1, "Block 1 Data");
-	//blockChain.AddBlock(block);
+	cout << "Mining block 1..." << endl;
+	Block block = Block(1, "Block 1 Data");
+	blockChain.AddBlock(block);
 
-	//cout << "Saving block 1..." << endl;
-	//blockChain.SaveBlock(block);
+	cout << "Saving block 1..." << endl;
+	blockChain.SaveBlock(block);
 
-	//cout << "Mining block 2..." << endl;
-	//block = Block(2, "Block 2 Data");
-	//blockChain.AddBlock(block);
+	cout << "Mining block 2..." << endl;
+	block = Block(2, "Block 2 Data");
+	blockChain.AddBlock(block);
 
-	//cout << "Mining block 3..." << endl;
-	//block = Block(3, "Block 3 Data");
-	//blockChain.AddBlock(block);
+	cout << "Mining block 3..." << endl;
+	block = Block(3, "Block 3 Data");
+	blockChain.AddBlock(block);
 }

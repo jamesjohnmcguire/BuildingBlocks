@@ -12,44 +12,6 @@
 
 using namespace std;
 
-struct BioDeleter
-{
-	void operator()(BIO* bio) const
-	{
-		if (bio)
-		{
-			BIO_free(bio);
-		}
-	}
-};
-
-struct EvpKeyDeleter
-{
-	void operator()(EVP_PKEY* evp) const
-	{
-		if (evp)
-		{
-			EVP_PKEY_free(evp);
-		}
-	}
-};
-
-struct RsaDeleter
-{
-	void operator()(RSA* rsa) const
-	{
-		if (rsa)
-		{
-			RSA_free(rsa);
-			rsa = nullptr;
-		}
-	}
-};
-
-using EvpKeyPointer = std::unique_ptr<EVP_PKEY, EvpKeyDeleter>;
-using BioPointer = std::unique_ptr<BIO, BioDeleter>;
-using RsaPointer = std::unique_ptr<RSA, RsaDeleter>;
-
 class Cryptography
 {
 	public:
@@ -59,7 +21,6 @@ class Cryptography
 			std::string publicKey,
 			std::string plainText,
 			char* signatureBase64);
-		BioPointer CreateKey();
 		DllExport ~Cryptography();
 
 	private:
@@ -71,11 +32,10 @@ class Cryptography
 		BIO* CreateKey(RSA* rsa, bool isPublicKey);
 		char* CreatePemKey(BIO* key);
 		RSA* CreateRsaKey();
-		RsaPointer CreateRsaKeyNew();
-		RsaPointer GetRsaPrivateKey(std::string privateKey);
+		RSA* GetRsaPrivateKey(std::string privateKey);
 		RSA* GetRsaPublicKey(std::string publicKey);
 		unsigned char* RsaSignData(
-			RsaPointer privateKey,
+			RSA* privateKey,
 			const unsigned char* data,
 			size_t dataLength,
 			size_t* outputLength);
