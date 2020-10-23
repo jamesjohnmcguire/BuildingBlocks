@@ -67,5 +67,5 @@ TEST(Cryptography, SignData)
 	char* signature = cryptography.SignMessage(privateKey, plainText);
 	bool authentic = cryptography.VerifySignature(publicKey, "My secret message.\n", signature);
 
-	EXPECT_TRUE(authentic > 0);
+	EXPECT_TRUE(authentic);
 }

@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-#ifdef WIN32
+#ifdef _WIN32
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
 #include <crtdbg.h>
@@ -16,7 +16,7 @@ int main()
 	std::cout << "Starting application\n";
 	Testing();
 
-#ifdef WIN32
+#ifdef _WIN32
 	_CrtDumpMemoryLeaks();
 #endif
 }

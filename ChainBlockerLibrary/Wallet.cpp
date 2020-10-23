@@ -10,11 +10,11 @@ Wallet::Wallet()
 
 	CryptographicKeyPair* keyPair = cryptography.CreateKeyPair();
 
-	if (keyPair != NULL)
-	{
-		privateKey = keyPair->PrivateKey;
-		publicKey = keyPair->PublicKey;
-	}
+	//if (keyPair != NULL)
+	//{
+	//	privateKey = keyPair->PrivateKey;
+	//	publicKey = keyPair->PublicKey;
+	//}
 }
 
 Wallet::~Wallet()
