@@ -57,13 +57,13 @@ char* Cryptography::SignData(std::string privateKey, std::string plainText)
 	char* output = nullptr;
 	size_t outputLength;
 
-	RSA* privateRsaKey = GetRsaPrivateKey(privateKey);
+	RsaPointer privateRsaKey = GetRsaPrivateKey(privateKey);
 
 	unsigned char* data = (unsigned char*)plainText.c_str();
 	size_t dataLength = plainText.length();
 
 	unsigned char* signedData =
-		SignData(privateRsaKey, data, dataLength, &outputLength);
+		RsaSignData(privateRsaKey, data, dataLength, &outputLength);
 
 	output = Base64Encode(signedData, outputLength);
 
@@ -85,10 +85,18 @@ bool Cryptography::VerifySignature(
 	unsigned char* input = (unsigned char*)plainText.c_str();
 	inputLength = plainText.length();
 
-	bool result = VerifySignature(
+	bool result = RsaVerifySignature(
 		publicRSA, input, inputLength, encMessage, outputLength);
 
 	return result;
+}
+
+Cryptography::~Cryptography()
+{
+	ERR_remove_state(3);
+	ERR_free_strings(3);
+	EVP_cleanup(3);
+	CRYPTO_cleanup_all_ex_data(3);
 }
 
 unsigned char* Cryptography::Base64Decode(
@@ -137,6 +145,35 @@ char* Cryptography::Base64Encode(
 	}
 
 	return output;
+}
+
+BioPointer Cryptography::CreateKey()
+{
+	BioPointer test = nullptr;
+
+	RsaPointer rsa = CreateRsaKeyNew();
+
+	if (rsa != nullptr)
+	{
+		int successCode;
+//		BIO* key = BIO_new(BIO_s_mem());
+
+	//	// unique_ptr<BIO*> test = BIO_new(BIO_s_mem());
+
+	//	successCode = PEM_write_bio_RSAPublicKey(key, rsa);
+
+	//	if (successCode != 1)
+	//	{
+	//		BIO_free_all(key);
+	//	}
+	//	else
+	//	{
+	//		test = bio_ptr(key);
+	//	}
+		rsa = nullptr;
+	}
+
+	return test;
 }
 
 BIO* Cryptography::CreateKey(RSA* rsa, bool isPublicKey)
@@ -190,7 +227,10 @@ RSA* Cryptography::CreateRsaKey()
     if (successCode == 1)
     {
 		rsaKey = RSA_new();
-        successCode = RSA_generate_key_ex(rsaKey, bits, bigNumber, nullptr);
+//		RsaPointer test = RsaPointer(rsaKey);
+		RsaPointer bp(RSA_new());
+
+	//        successCode = RSA_generate_key_ex(rsaKey, bits, bigNumber, nullptr);
 
         if (successCode != 1)
         {
@@ -200,28 +240,50 @@ RSA* Cryptography::CreateRsaKey()
     }
 
     BN_free(bigNumber);
+	bigNumber = nullptr;
 
     return rsaKey;
 }
 
-
-RSA* Cryptography::GetRsaPrivateKey(BIO* bioKey)
+RsaPointer Cryptography::CreateRsaKeyNew()
 {
-	RSA* rsaKey = NULL;
+	RsaPointer rsaKey = nullptr;
+	BIGNUM* bigNumber = nullptr;
+	unsigned long algorythmType = RSA_F4;
+	int bits = 2048;
+
+	bigNumber = BN_new();
+	int successCode = BN_set_word(bigNumber, algorythmType);
+
+	if (successCode == 1)
+	{
+		RSA* rsa = RSA_new();
+
+		successCode = RSA_generate_key_ex(rsa, bits, bigNumber, nullptr);
+
+		if (successCode == 1)
+		{
+			RsaPointer rsaKey(rsa);
+		}
+	}
+
+	BN_free(bigNumber);
+	bigNumber = nullptr;
 
 	return rsaKey;
 }
 
-RSA* Cryptography::GetRsaPrivateKey(std::string privateKey)
+RsaPointer Cryptography::GetRsaPrivateKey(std::string privateKey)
 {
-	RSA* rsaKey = nullptr;
+	RsaPointer rsaKey = nullptr;
 
 	const char* string = privateKey.c_str();
 	BIO* bioKey = BIO_new_mem_buf((void*)string, -1);
 
 	if (bioKey != nullptr)
 	{
-		rsaKey = PEM_read_bio_RSAPrivateKey(bioKey, &rsaKey, nullptr, nullptr);
+		RSA* rsa = PEM_read_bio_RSAPrivateKey(bioKey, &rsa, nullptr, nullptr);
+		rsaKey(rsa);
 	}
 
 	return rsaKey;
@@ -243,8 +305,8 @@ RSA* Cryptography::GetRsaPublicKey(std::string publicKey)
 }
 
 // caller is responsible for freeing returned data.
-unsigned char* Cryptography::SignData(
-	RSA* privateKey,
+unsigned char* Cryptography::RsaSignData(
+	RsaPointer privateKey,
 	const unsigned char* data,
 	size_t dataLength,
 	size_t* outputLength)
@@ -269,7 +331,8 @@ unsigned char* Cryptography::SignData(
 			if (successCode > 0)
 			{
 				signedData = (unsigned char*)malloc(*outputLength);
-				successCode = EVP_DigestSignFinal(context, signedData, outputLength);
+				successCode =
+					EVP_DigestSignFinal(context, signedData, outputLength);
 			}
 		}
 	}
@@ -279,39 +342,8 @@ unsigned char* Cryptography::SignData(
 	return signedData;
 }
 
-bool Cryptography::VerifyKey(char* pemKey, bool isPublicKey)
-{
-    bool verified = false;
-
-    BIO* key = BIO_new_mem_buf((void*)pemKey, -1);
-    if (key != NULL)
-    {
-        EVP_PKEY* evpKey = NULL;
-
-        if (isPublicKey == true)
-        {
-            evpKey = PEM_read_bio_PUBKEY(key, &evpKey, NULL, NULL);
-        }
-        else
-        {
-				// PEM_read_bio_RSAPrivateKey
-				evpKey = PEM_read_bio_PrivateKey(key, &evpKey, NULL, NULL);
-        }
-
-        if (evpKey != NULL)
-        {
-            verified = true;
-        }
-
-        BIO_free(key);
-    }
-
-    return verified;
-}
-
-
 // caller is responsible for freeing returned data.
-bool Cryptography::VerifySignature(
+bool Cryptography::RsaVerifySignature(
 	RSA * publicKey,
 	const unsigned char* data,
 	size_t dataLength,
@@ -346,6 +378,36 @@ bool Cryptography::VerifySignature(
 	}
 
 	EVP_MD_CTX_free(context);
+
+	return verified;
+}
+
+bool Cryptography::VerifyKey(char* pemKey, bool isPublicKey)
+{
+	bool verified = false;
+
+	BIO* key = BIO_new_mem_buf((void*)pemKey, -1);
+	if (key != NULL)
+	{
+		EVP_PKEY* evpKey = NULL;
+
+		if (isPublicKey == true)
+		{
+			evpKey = PEM_read_bio_PUBKEY(key, &evpKey, NULL, NULL);
+		}
+		else
+		{
+			// PEM_read_bio_RSAPrivateKey
+			evpKey = PEM_read_bio_PrivateKey(key, &evpKey, NULL, NULL);
+		}
+
+		if (evpKey != NULL)
+		{
+			verified = true;
+		}
+
+		BIO_free(key);
+	}
 
 	return verified;
 }
