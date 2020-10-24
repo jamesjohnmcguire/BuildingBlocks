@@ -63,7 +63,7 @@ char* Cryptography::SignData(std::string privateKey, std::string plainText)
 	size_t dataLength = plainText.length();
 
 	unsigned char* signedData =
-		RsaSignData(privateRsaKey, data, dataLength, &outputLength);
+		RsaSignData(std::move(privateRsaKey), data, dataLength, &outputLength);
 
 	output = Base64Encode(signedData, outputLength);
 
@@ -283,7 +283,7 @@ RsaPointer Cryptography::GetRsaPrivateKey(std::string privateKey)
 	if (bioKey != nullptr)
 	{
 		RSA* rsa = PEM_read_bio_RSAPrivateKey(bioKey, &rsa, nullptr, nullptr);
-		rsaKey(rsa);
+		rsaKey.reset(rsa);
 	}
 
 	return rsaKey;
@@ -315,7 +315,7 @@ unsigned char* Cryptography::RsaSignData(
 
 	EVP_MD_CTX* context = EVP_MD_CTX_create();
 	EVP_PKEY* evpPrivateKey = EVP_PKEY_new();
-	EVP_PKEY_assign_RSA(evpPrivateKey, privateKey);
+	EVP_PKEY_assign_RSA(evpPrivateKey, privateKey.get());
 
 	int successCode = EVP_DigestSignInit(
 		context, NULL, EVP_sha256(), NULL, evpPrivateKey);
