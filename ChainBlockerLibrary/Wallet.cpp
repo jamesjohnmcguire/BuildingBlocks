@@ -10,15 +10,9 @@ Wallet::Wallet()
 
 	CryptographicKeyPair* keyPair = cryptography.CreateKeyPair();
 
-	//if (keyPair != NULL)
-	//{
-	//	privateKey = keyPair->PrivateKey;
-	//	publicKey = keyPair->PublicKey;
-	//}
-}
-
-Wallet::~Wallet()
-{
-    BIO_free_all(privateKey);
-    BIO_free_all(publicKey);
+	if (keyPair != NULL)
+	{
+		privateKey = std::move(keyPair->PrivateKey);
+		publicKey = std::move(keyPair->PublicKey);
+	}
 }
