@@ -3,10 +3,10 @@
 #include <vector>
 #include "Block.h"
 
-using namespace std;
-
-class Blockchain
+namespace ChainBlocker
 {
+	class Blockchain
+	{
 	public:
 		DllExport Blockchain();
 
@@ -16,7 +16,8 @@ class Blockchain
 
 	private:
 		uint32_t difficulty;
-		vector<Block> chain;
+		std::vector<Block> chain;
 
 		Block GetLastBlock() const;
-};
+	};
+}

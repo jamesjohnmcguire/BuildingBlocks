@@ -6,14 +6,17 @@
 
 using namespace std;
 
-class BlockFile
+namespace ChainBlocker
 {
-    private:
-        std::string FileName;
-        std::fstream File;
+	class BlockFile
+	{
+		private:
+			std::string FileName;
+			std::fstream File;
 
-    public:
-        BlockFile(string FileName);
-        void Write(Block block);
-        Block Read();
-};
+		public:
+			BlockFile(string FileName);
+			void Write(Block block);
+			Block Read();
+	};
+}
