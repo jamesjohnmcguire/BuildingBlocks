@@ -8,11 +8,11 @@ using namespace std;
 class Blockchain
 {
 	public:
-		Blockchain();
+		DllExport Blockchain();
 
-		void AddBlock(Block newBlock);
-		void SaveBlock(Block block);
-		bool ValidateChain();
+		DllExport void AddBlock(Block newBlock);
+		DllExport void SaveBlock(Block block);
+		DllExport bool ValidateChain();
 
 	private:
 		uint32_t difficulty;
