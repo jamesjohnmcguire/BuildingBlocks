@@ -22,7 +22,6 @@ class Cryptography
 			std::string publicKey,
 			std::string plainText,
 			char* signatureBase64);
-		BioPointer CreateKey();
 		DllExport ~Cryptography();
 
 	private:

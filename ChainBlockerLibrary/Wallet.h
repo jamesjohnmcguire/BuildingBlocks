@@ -10,7 +10,7 @@
 class Wallet
 {
 	public:
-		Wallet();
+		DllExport Wallet();
 
 	private:
 		BioPointer privateKey;
