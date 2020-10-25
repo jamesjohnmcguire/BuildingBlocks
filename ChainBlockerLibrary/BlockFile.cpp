@@ -1,36 +1,45 @@
 #include "pch.h"
 #include "BlockFile.h"
 
-BlockFile::BlockFile(string fileName)
-    : FileName(fileName)
+namespace ChainBlocker
 {
+	BlockFile::BlockFile(std::string fileName)
+		: fileName(fileName)
+	{
+	}
 
-}
+	BlockFile::BlockFile(const BlockFile& other)
+	{
+	}
 
-void BlockFile::Write(Block block)
-{
-    File.open(FileName, std::ios::binary | std::ios::out);
+	void BlockFile::Write(Block block)
+	{
+		std::fstream file;
+		file.open(fileName, std::ios::binary | std::ios::out);
 
-    if (File)
-    {
-        size_t size = sizeof(block);
-        File.write((char *)&block, size);
-    }
+		if (file)
+		{
+			size_t size = sizeof(block);
+			file.write((char*)&block, size);
+		}
 
-    File.close();
-}
+		file.close();
+	}
 
-Block BlockFile::Read()
-{
-    Block block;
+	Block BlockFile::Read()
+	{
+		Block block;
+		std::fstream file;
 
-    File.open(FileName, std::ios::binary | std::ios::in);
+		file.open(fileName, std::ios::binary | std::ios::in);
 
-    if (File)
-    {
-        // block.read(File);
-    }
+		if (file)
+		{
+			// block.read(File);
+		}
 
-    File.close();
-    return block;
+		file.close();
+
+		return block;
+	}
 }

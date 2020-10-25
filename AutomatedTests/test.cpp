@@ -6,6 +6,8 @@
 #include "../ChainBlockerLibrary/Block.h"
 #include "../ChainBlockerLibrary/Cryptography.h"
 
+using namespace ChainBlocker;
+
 TEST(TestCaseName, TestName)
 {
   EXPECT_EQ(1, 1);
