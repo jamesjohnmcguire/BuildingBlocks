@@ -5,13 +5,14 @@
 #include <openssl/pem.h>
 #include <exception>
 
+#include "OpenSslPointers.h"
+
 class Wallet
 {
 	public:
 		Wallet();
-		~Wallet();
 
 	private:
-		BIO* privateKey;
-		BIO* publicKey;
+		BioPointer privateKey;
+		BioPointer publicKey;
 };
