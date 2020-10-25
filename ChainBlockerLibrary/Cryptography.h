@@ -11,6 +11,15 @@
 #include "OpenSslPointers.h"
 #include "CryptographicKeyPair.h"
 
+// caller is responsible for freeing returned data.
+LIB_API(char*) SignData(
+	char* privateKey,
+	char* plainText);
+LIB_API(bool) VerifySignature(
+	char* publicKey,
+	char* plainText,
+	char* signatureBase64);
+
 class Cryptography
 {
 	public:
@@ -21,12 +30,12 @@ class Cryptography
 		DllExport bool VerifySignature(
 			std::string publicKey,
 			std::string plainText,
-			char* signatureBase64);
+			std::string signatureBase64);
 		DllExport ~Cryptography();
 
 	private:
 		std::unique_ptr<unsigned char> Base64Decode(
-			const char* input,
+			std::string input,
 			size_t length,
 			size_t* outputLength);
 		std::unique_ptr<char> Base64Encode(

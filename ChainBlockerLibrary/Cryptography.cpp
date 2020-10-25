@@ -2,6 +2,38 @@
 #include "Cryptography.h"
 
 // caller is responsible for freeing returned data.
+char* SignData(
+	char* privateKey,
+	char* plainText)
+{
+	Cryptography cryptography = Cryptography();
+
+	std::unique_ptr<char> signature =
+		cryptography.SignData(privateKey, plainText);
+	std::string buffer = signature.get();
+
+	size_t size = buffer.size() + 1;
+
+	void* rawOutput = malloc(size);
+	char* output = reinterpret_cast<char*>(rawOutput);
+
+	return output;
+}
+
+bool VerifySignature(
+	char* publicKey,
+	char* plainText,
+	char* signatureBase64)
+{
+	Cryptography cryptography = Cryptography();
+
+	bool authentic = cryptography.VerifySignature(
+		publicKey, plainText, signatureBase64);
+
+	return authentic;
+}
+
+// caller is responsible for freeing returned data.
 CryptographicKeyPair* Cryptography::CreateKeyPair()
 {
 	CryptographicKeyPair* keyPair = NULL;
@@ -50,7 +82,9 @@ CryptographicKeyPair* Cryptography::CreateKeyPair()
 	return keyPair;
 }
 
-std::unique_ptr<char> Cryptography::SignData(std::string privateKey, std::string plainText)
+std::unique_ptr<char> Cryptography::SignData(
+	std::string privateKey,
+	std::string plainText)
 {
 	std::unique_ptr<char> output = nullptr;
 	size_t outputLength;
@@ -71,9 +105,9 @@ std::unique_ptr<char> Cryptography::SignData(std::string privateKey, std::string
 bool Cryptography::VerifySignature(
 	std::string publicKey,
 	std::string plainText,
-	char* signatureBase64)
+	std::string signatureBase64)
 {
-	size_t inputLength = strlen(signatureBase64);
+	size_t inputLength = signatureBase64.size();
 	size_t outputLength;
 
 	RsaPointer publicRSA = GetRsaKey(publicKey, true);
@@ -102,10 +136,10 @@ Cryptography::~Cryptography()
 }
 
 std::unique_ptr<unsigned char> Cryptography::Base64Decode(
-	const char* input, size_t inputLength, size_t* outputLength)
+	std::string input, size_t inputLength, size_t* outputLength)
 {
 	const unsigned char* inputBuffer =
-		reinterpret_cast<const unsigned char*>(input);
+		reinterpret_cast<const unsigned char*>(input.c_str());
 
 	const size_t bufferLength = 3 * inputLength / 4;
 
