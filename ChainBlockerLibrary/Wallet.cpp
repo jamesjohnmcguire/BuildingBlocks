@@ -12,13 +12,7 @@ Wallet::Wallet()
 
 	if (keyPair != NULL)
 	{
-		privateKey = keyPair->PrivateKey;
-		publicKey = keyPair->PublicKey;
+		privateKey = std::move(keyPair->PrivateKey);
+		publicKey = std::move(keyPair->PublicKey);
 	}
-}
-
-Wallet::~Wallet()
-{
-    BIO_free_all(privateKey);
-    BIO_free_all(publicKey);
 }
