@@ -1,7 +1,8 @@
 #pragma once
+#include "OpenSslPointers.h"
 
 struct CryptographicKeyPair
 {
-	BIO* PrivateKey;
-	BIO* PublicKey;
+	BioPointer PrivateKey;
+	BioPointer PublicKey;
 };

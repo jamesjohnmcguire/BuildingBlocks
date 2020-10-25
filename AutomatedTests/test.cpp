@@ -64,8 +64,10 @@ TEST(Cryptography, SignData)
 	Cryptography cryptography = Cryptography();
 
 	std::string plainText = "My secret message.\n";
-	char* signature = cryptography.SignData(privateKey, plainText);
-	bool authentic = cryptography.VerifySignature(publicKey, "My secret message.\n", signature);
+	std::unique_ptr<char> signature =
+		cryptography.SignData(privateKey, plainText);
+	bool authentic = cryptography.VerifySignature(
+		publicKey, "My secret message.\n", signature.get());
 
 	EXPECT_TRUE(authentic);
 }
