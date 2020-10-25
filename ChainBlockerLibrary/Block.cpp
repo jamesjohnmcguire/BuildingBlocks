@@ -13,7 +13,7 @@ Block::Block()
 	timeStamp = time(nullptr);
 }
 
-Block::Block(uint32_t indexIn, const string& dataIn)
+Block::Block(uint32_t indexIn, const std::string& dataIn)
 	: index(indexIn), data(dataIn), name(dataIn)
 {
 	nonce = -1;
@@ -21,34 +21,34 @@ Block::Block(uint32_t indexIn, const string& dataIn)
 }
 
 Block::Block(
-	uint32_t indexIn, const string& dataIn, const string& previousHash)
+	uint32_t indexIn, const std::string& dataIn, const std::string& previousHash)
 	: index(indexIn), data(dataIn), name(dataIn), previousHash(previousHash)
 {
 	nonce = -1;
 	timeStamp = time(nullptr);
 }
 
-inline string Block::CalculateHash() const
+inline std::string Block::CalculateHash() const
 {
-	stringstream streamBuffer;
+	std::stringstream streamBuffer;
 	streamBuffer << index << timeStamp << data << nonce << previousHash;
 
-	string buffer = streamBuffer.str();
-	string hash = sha256(buffer);
+	std::string buffer = streamBuffer.str();
+	std::string hash = sha256(buffer);
 	return hash;
 }
 
-string Block::GetHash() const
+std::string Block::GetHash() const
 {
 	return hash;
 }
 
-string Block::GetName() const
+std::string Block::GetName() const
 {
 	return name;
 }
 
-string Block::GetPreviousHash() const
+std::string Block::GetPreviousHash() const
 {
 	return previousHash;
 }
@@ -64,15 +64,15 @@ void Block::MineBlock(uint32_t difficulty)
 	time(&start);
 
 	size_t size = (size_t)difficulty;
-	vector<char> tempBuffer(size);
+	std::vector<char> tempBuffer(size);
 
 	for (uint32_t i = 0; i < difficulty; ++i)
 	{
 		tempBuffer[i] = '0';
 	}
 
-	string testBuffer(tempBuffer.begin(), tempBuffer.end());
-	string testHash;
+	std::string testBuffer(tempBuffer.begin(), tempBuffer.end());
+	std::string testHash;
 
 	do
 	{
@@ -91,11 +91,12 @@ void Block::MineBlock(uint32_t difficulty)
 	int minutesRemainder = minutes % 60;
 	int secondsRemainder = totalSeconds % 60;
 
-	cout << "Block mined: " << hash << endl;
-	cout << "Time taken: " << hours << ":" << minutesRemainder << ":" << secondsRemainder << endl;
+	std::cout << "Block mined: " << hash << std::endl;
+	std::cout << "Time taken: " << hours << ":" << minutesRemainder << ":" <<
+		secondsRemainder << std::endl;
 }
 
-void Block::SetHash(string hash)
+void Block::SetHash(std::string hash)
 {
 	this->hash = hash;
 }

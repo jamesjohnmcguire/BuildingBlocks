@@ -5,34 +5,32 @@
 #include <sstream>
 #include "chainblocker.h"
 
-using namespace std;
-
 class Block
 {
 	public:
 		DllExport Block();
 		DllExport Block(
 			uint32_t indexIn,
-			const string& dataIn);
+			const std::string& dataIn);
 		DllExport Block(
 			uint32_t indexIn,
-			const string& dataIn,
-			const string& previousHash);
+			const std::string& dataIn,
+			const std::string& previousHash);
 
-		DllExport string CalculateHash() const;
-		DllExport string GetHash() const;
-		DllExport string GetName() const;
-		DllExport string GetPreviousHash() const;
+		DllExport std::string CalculateHash() const;
+		DllExport std::string GetHash() const;
+		DllExport std::string GetName() const;
+		DllExport std::string GetPreviousHash() const;
 		DllExport time_t GetTimeStamp() const;
 		DllExport void MineBlock(uint32_t difficulty);
-		DllExport void SetHash(string hash);
+		DllExport void SetHash(std::string hash);
 
 	private:
-		string data;
-		string hash;
+		std::string data;
+		std::string hash;
 		uint32_t index;
-		string name;
+		std::string name;
 		int64_t nonce;
-		string previousHash;
+		std::string previousHash;
 		time_t timeStamp;
 };
