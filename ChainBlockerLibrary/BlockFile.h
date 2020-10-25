@@ -4,19 +4,19 @@
 #include <string>
 #include "Block.h"
 
-using namespace std;
-
 namespace ChainBlocker
 {
 	class BlockFile
 	{
-		private:
-			std::string FileName;
-			std::fstream File;
-
 		public:
-			BlockFile(string FileName);
-			void Write(Block block);
-			Block Read();
+			DllExport BlockFile(std::string FileName);
+			DllExport BlockFile(const BlockFile& other);
+			~BlockFile() = default;
+
+			DllExport Block Read();
+			DllExport void Write(Block block);
+
+		private:
+			std::string fileName;
 	};
 }

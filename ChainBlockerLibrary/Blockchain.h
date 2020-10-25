@@ -9,6 +9,8 @@ namespace ChainBlocker
 	{
 	public:
 		DllExport Blockchain();
+		DllExport Blockchain(const Blockchain& other);
+		~Blockchain() = default;
 
 		DllExport void AddBlock(Block newBlock);
 		DllExport void SaveBlock(Block block);

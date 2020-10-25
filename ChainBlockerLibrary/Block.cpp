@@ -15,6 +15,17 @@ namespace ChainBlocker
 		timeStamp = time(nullptr);
 	}
 
+	Block::Block(const Block& other)
+	{
+		data = other.data;
+		hash = other.hash;
+		index = other.index;
+		name = other.name;
+		nonce = other.nonce;
+		previousHash = other.previousHash;
+		timeStamp = other.timeStamp;
+	}
+
 	Block::Block(uint32_t indexIn, const std::string& dataIn)
 		: index(indexIn), data(dataIn), name(dataIn)
 	{

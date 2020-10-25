@@ -3,37 +3,43 @@
 
 namespace ChainBlocker
 {
-	BlockFile::BlockFile(string fileName)
-		: FileName(fileName)
+	BlockFile::BlockFile(std::string fileName)
+		: fileName(fileName)
 	{
+	}
 
+	BlockFile::BlockFile(const BlockFile& other)
+	{
 	}
 
 	void BlockFile::Write(Block block)
 	{
-		File.open(FileName, std::ios::binary | std::ios::out);
+		std::fstream file;
+		file.open(fileName, std::ios::binary | std::ios::out);
 
-		if (File)
+		if (file)
 		{
 			size_t size = sizeof(block);
-			File.write((char*)&block, size);
+			file.write((char*)&block, size);
 		}
 
-		File.close();
+		file.close();
 	}
 
 	Block BlockFile::Read()
 	{
 		Block block;
+		std::fstream file;
 
-		File.open(FileName, std::ios::binary | std::ios::in);
+		file.open(fileName, std::ios::binary | std::ios::in);
 
-		if (File)
+		if (file)
 		{
 			// block.read(File);
 		}
 
-		File.close();
+		file.close();
+
 		return block;
 	}
 }

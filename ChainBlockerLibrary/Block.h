@@ -18,6 +18,8 @@ namespace ChainBlocker
 				uint32_t indexIn,
 				const std::string& dataIn,
 				const std::string& previousHash);
+			DllExport Block(const Block& other);
+			~Block() = default;
 
 			DllExport std::string CalculateHash() const;
 			DllExport std::string GetHash() const;
