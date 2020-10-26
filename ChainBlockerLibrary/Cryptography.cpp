@@ -40,7 +40,7 @@ namespace ChainBlocker
 	{
 		CryptographicKeyPair* keyPair = NULL;
 
-		RsaPointer rsa = CreateRsaKey();
+		RsaSharedPointer rsa = CreateRsaKey();
 
 		if (rsa != NULL)
 		{
@@ -49,33 +49,31 @@ namespace ChainBlocker
 
 			if (keyPair != NULL)
 			{
-				BioPointer privateKey = CreateKey(std::move(rsa), false);
+				BioSharedPointer privateKey = CreateKey(rsa, false);
 
 				if (privateKey != NULL)
 				{
-					char* privateKeyPem = CreatePemKey(std::move(privateKey));
+					std::string privateKeyPem = CreatePemKey(privateKey);
 
-					if (privateKeyPem != NULL)
+					if (!privateKeyPem.empty())
 					{
 						verified = VerifyKey(privateKeyPem, false);
-						free(privateKeyPem);
 
-						keyPair->PrivateKey = std::move(privateKey);
+						keyPair->PrivateKey = privateKey;
 					}
 				}
 
-				BioPointer publicKey = CreateKey(std::move(rsa), true);
+				BioSharedPointer publicKey = CreateKey(rsa, true);
 
 				if (publicKey != NULL)
 				{
-					char* publicKeyPem = CreatePemKey(std::move(publicKey));
+					std::string publicKeyPem = CreatePemKey(publicKey);
 
-					if (publicKeyPem != NULL)
+					if (!publicKeyPem.empty())
 					{
 						verified = VerifyKey(publicKeyPem, true);
-						free(publicKeyPem);
 
-						keyPair->PublicKey = std::move(publicKey);
+						keyPair->PublicKey = publicKey;
 					}
 				}
 			}
@@ -194,7 +192,8 @@ namespace ChainBlocker
 		return output;
 	}
 
-	BioPointer Cryptography::CreateKey(RsaPointer rsaKey, bool isPublicKey)
+	BioPointer Cryptography::CreateKey(
+		RsaSharedPointer rsaKey, bool isPublicKey)
 	{
 		BioPointer key = nullptr;
 
@@ -225,24 +224,28 @@ namespace ChainBlocker
 		return key;
 	}
 
-	char* Cryptography::CreatePemKey(BioPointer key)
+	std::string Cryptography::CreatePemKey(BioSharedPointer key)
 	{
+		std::string keyPem;
+
 		int keyLength = BIO_pending(key.get());
-		char* keyPem = (char*)malloc((size_t)keyLength + 1);
+		char* buffer = (char*)malloc((size_t)keyLength + 1);
 
-		BIO_read(key.get(), keyPem, keyLength);
+		BIO_read(key.get(), buffer, keyLength);
 
-		if (keyPem != NULL)
+		if (buffer != nullptr)
 		{
-			keyPem[keyLength] = '\0';
+			buffer[keyLength] = '\0';
+
+			keyPem = buffer;
 		}
 
 		return keyPem;
 	}
 
-	RsaPointer Cryptography::CreateRsaKey()
+	RsaSharedPointer Cryptography::CreateRsaKey()
 	{
-		RsaPointer rsaKey = nullptr;
+		RsaSharedPointer rsaKey = nullptr;
 		BIGNUM* bigNumber = nullptr;
 		unsigned long algorythmType = RSA_F4;
 		int bits = 2048;
@@ -258,7 +261,7 @@ namespace ChainBlocker
 
 			if (successCode == 1)
 			{
-				RsaPointer rsaKey(rsa);
+				rsaKey.reset(rsa);
 			}
 		}
 
@@ -372,31 +375,43 @@ namespace ChainBlocker
 		return verified;
 	}
 
-	bool Cryptography::VerifyKey(char* pemKey, bool isPublicKey)
+	bool Cryptography::VerifyKey(std::string pemKey, bool isPublicKey)
 	{
 		bool verified = false;
 
-		BIO* key = BIO_new_mem_buf((void*)pemKey, -1);
-		if (key != NULL)
+		size_t size = pemKey.size() + 1;
+		void* buffer = malloc(size + 1);
+		char* charBuffer = (char*)buffer;
+
+		if (charBuffer != nullptr)
 		{
-			EVP_PKEY* evpKey = NULL;
+			pemKey.copy(charBuffer, pemKey.size());
 
-			if (isPublicKey == true)
+			BIO* key = BIO_new_mem_buf(buffer, -1);
+
+			if (key != nullptr)
 			{
-				evpKey = PEM_read_bio_PUBKEY(key, &evpKey, NULL, NULL);
-			}
-			else
-			{
-				// PEM_read_bio_RSAPrivateKey
-				evpKey = PEM_read_bio_PrivateKey(key, &evpKey, NULL, NULL);
+				EVP_PKEY* evpKey = nullptr;
+
+				if (isPublicKey == true)
+				{
+					evpKey = PEM_read_bio_PUBKEY(key, &evpKey, nullptr, nullptr);
+				}
+				else
+				{
+					// PEM_read_bio_RSAPrivateKey
+					evpKey = PEM_read_bio_PrivateKey(key, &evpKey, nullptr, nullptr);
+				}
+
+				if (evpKey != nullptr)
+				{
+					verified = true;
+				}
+
+				BIO_free(key);
 			}
 
-			if (evpKey != NULL)
-			{
-				verified = true;
-			}
-
-			BIO_free(key);
+			free(buffer);
 		}
 
 		return verified;

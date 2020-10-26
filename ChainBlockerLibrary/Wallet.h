@@ -15,7 +15,7 @@ namespace ChainBlocker
 		DllExport Wallet();
 
 	private:
-		BioPointer privateKey;
-		BioPointer publicKey;
+		BioSharedPointer privateKey;
+		BioSharedPointer publicKey;
 	};
 }

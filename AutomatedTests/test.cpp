@@ -71,5 +71,20 @@ TEST(Cryptography, SignData)
 	bool authentic = cryptography.VerifySignature(
 		publicKey, "My secret message.\n", signature.get());
 
-	EXPECT_TRUE(authentic);
+	ASSERT_TRUE(authentic);
+}
+
+TEST(Cryptography, CreateKeyPair)
+{
+	Cryptography cryptography = Cryptography();
+
+	CryptographicKeyPair* keyPair = cryptography.CreateKeyPair();
+
+	ASSERT_NE(keyPair, nullptr);
+
+	BioSharedPointer key = keyPair->PrivateKey;
+	ASSERT_NE(key, nullptr);
+
+	key = keyPair->PublicKey;
+	ASSERT_NE(key, nullptr);
 }

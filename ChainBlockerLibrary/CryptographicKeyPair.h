@@ -5,7 +5,7 @@ namespace ChainBlocker
 {
 	struct CryptographicKeyPair
 	{
-		BioPointer PrivateKey;
-		BioPointer PublicKey;
+		BioSharedPointer PrivateKey;
+		BioSharedPointer PublicKey;
 	};
 }

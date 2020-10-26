@@ -14,8 +14,8 @@ namespace ChainBlocker
 
 		if (keyPair != NULL)
 		{
-			privateKey = std::move(keyPair->PrivateKey);
-			publicKey = std::move(keyPair->PublicKey);
+			privateKey = keyPair->PrivateKey;
+			publicKey = keyPair->PublicKey;
 		}
 	}
 }

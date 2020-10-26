@@ -43,9 +43,9 @@ namespace ChainBlocker
 			std::unique_ptr<char> Base64Encode(
 				const unsigned char* input,
 				size_t length);
-			BioPointer CreateKey(RsaPointer rsaKey, bool isPublicKey);
-			char* CreatePemKey(BioPointer key);
-			RsaPointer CreateRsaKey();
+			BioPointer CreateKey(RsaSharedPointer rsaKey, bool isPublicKey);
+			std::string CreatePemKey(BioSharedPointer key);
+			RsaSharedPointer CreateRsaKey();
 			RsaPointer GetRsaKey(std::string privateKey, bool isPublicKey);
 			unsigned char* RsaSignData(
 				RsaPointer privateKey,
@@ -57,6 +57,6 @@ namespace ChainBlocker
 				size_t dataLength,
 				const std::unique_ptr<unsigned char> dataHash,
 				size_t dataHashLength);
-			bool VerifyKey(char* pemKey, bool isPublicKey);
+			bool VerifyKey(std::string pemKey, bool isPublicKey);
 	};
 }
