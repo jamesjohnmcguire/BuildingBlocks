@@ -48,6 +48,15 @@
     <ClInclude Include="OpenSslPointers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Transaction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TransactionInput.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TransactionOutput.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -75,6 +84,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Cryptography.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Transaction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TransactionInput.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TransactionOutput.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

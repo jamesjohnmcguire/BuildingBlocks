@@ -166,6 +166,9 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="sha256.h" />
+    <ClInclude Include="Transaction.h" />
+    <ClInclude Include="TransactionInput.h" />
+    <ClInclude Include="TransactionOutput.h" />
     <ClInclude Include="Wallet.h" />
   </ItemGroup>
   <ItemGroup>
@@ -182,6 +185,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="sha256.cpp" />
+    <ClCompile Include="Transaction.cpp" />
+    <ClCompile Include="TransactionInput.cpp" />
+    <ClCompile Include="TransactionOutput.cpp" />
     <ClCompile Include="Wallet.cpp" />
   </ItemGroup>
   <ItemGroup>

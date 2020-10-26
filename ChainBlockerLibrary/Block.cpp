@@ -1,9 +1,10 @@
 #include "pch.h"
 
-#include "Block.h"
-#include "sha256.h"
 #include <time.h>
 #include <vector>
+
+#include "sha256.h"
+#include "Block.h"
 
 namespace ChainBlocker
 {
