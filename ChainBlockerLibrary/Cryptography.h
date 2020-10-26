@@ -40,7 +40,7 @@ namespace ChainBlocker
 				std::string input,
 				size_t length,
 				size_t* outputLength);
-			std::unique_ptr<char> Base64Encode(
+			std::unique_ptr<unsigned char> Base64Encode(
 				const unsigned char* input,
 				size_t length);
 			BioPointer CreateKey(RsaSharedPointer rsaKey, bool isPublicKey);
