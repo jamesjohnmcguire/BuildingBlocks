@@ -164,7 +164,7 @@ namespace ChainBlocker
 		return output;
 	}
 
-	std::unique_ptr<unsigned char> Cryptography::Base64Encode(
+	std::unique_ptr<char> Cryptography::Base64Encode(
 		const unsigned char* input, size_t inputLength)
 	{
 		size_t encodeLength = 4 * ((inputLength + 2) / 3);
@@ -173,21 +173,21 @@ namespace ChainBlocker
 		encodeLength = encodeLength + 1;
 
 		void* buffer = calloc(encodeLength, 1);
-		unsigned char* charBuffer = reinterpret_cast<unsigned char*>(buffer);
-
-		std::unique_ptr<unsigned char> output(charBuffer);
+		char* charBuffer = reinterpret_cast<char*>(buffer);
 
 		unsigned char* encodeBuffer =
-			reinterpret_cast<unsigned char*>(output.get());
+			reinterpret_cast<unsigned char*>(charBuffer);
 
 		int bufferLength = static_cast<int>(inputLength);
 		int outputLength =
-			EVP_EncodeBlock(output.get(), input, bufferLength);
+			EVP_EncodeBlock(encodeBuffer, input, bufferLength);
 
 		if (encodeLength != outputLength)
 		{
 			// log warning
 		}
+
+		std::unique_ptr<char> output(charBuffer);
 
 		return output;
 	}
