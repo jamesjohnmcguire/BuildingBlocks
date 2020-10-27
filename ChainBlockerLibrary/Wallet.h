@@ -11,11 +11,12 @@ namespace ChainBlocker
 {
 	class Wallet
 	{
-	public:
-		DllExport Wallet();
+		public:
+			DllExport std::string GetPrivateKey();
+			DllExport Wallet();
 
-	private:
-		BioSharedPointer privateKey;
-		BioSharedPointer publicKey;
+		private:
+			BioSharedPointer privateKey;
+			BioSharedPointer publicKey;
 	};
 }

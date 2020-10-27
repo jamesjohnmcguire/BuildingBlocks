@@ -24,15 +24,15 @@ namespace ChainBlocker
 			bool VerifySignature();
 
 			Transaction(
-				std::string sender,
-				std::string recipient,
+				std::string senderPrivateKey,
+				std::string recipientPublicKey,
 				int amount,
 				std::vector<TransactionInput> inputs);
 
 		private:
 			std::string transactionId;
-			std::string sender;
-			std::string recipient;
+			std::string senderPrivateKey;
+			std::string recipientPublicKey;
 			int amount;
 			std::string signature;
 			std::vector<TransactionInput> inputs;

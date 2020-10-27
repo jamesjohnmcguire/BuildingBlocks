@@ -27,12 +27,12 @@ namespace ChainBlocker
 
 	std::string Transaction::GetSender()
 	{
-		return sender;
+		return senderPrivateKey;
 	}
 
 	std::string Transaction::GetRecipient()
 	{
-		return recipient;
+		return recipientPublicKey;
 	}
 
 	std::string Transaction::GetSignature()
@@ -46,11 +46,14 @@ namespace ChainBlocker
 	}
 
 	Transaction::Transaction(
-		std::string sender,
-		std::string recipient,
+		std::string senderPrivateKey,
+		std::string recipientPublicKey,
 		int amount,
 		std::vector<TransactionInput> inputs)
-		: sender(sender), recipient(recipient), amount(amount), inputs(inputs)
+		:	senderPrivateKey(senderPrivateKey),
+			recipientPublicKey(recipientPublicKey),
+			amount(amount),
+			inputs(inputs)
 	{
 		outputs = std::vector<TransactionOutput>();
 
@@ -60,7 +63,7 @@ namespace ChainBlocker
 	void Transaction::CreateSignature()
 	{
 		std::stringstream streamBuffer;
-		streamBuffer << sender << recipient << amount;
+		streamBuffer << senderPrivateKey << recipientPublicKey << amount;
 
 		std::string buffer = streamBuffer.str();
 		signature = sha256(buffer);
