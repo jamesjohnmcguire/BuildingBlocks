@@ -156,12 +156,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AlgorythmType.h" />
     <ClInclude Include="Block.h" />
     <ClInclude Include="Blockchain.h" />
     <ClInclude Include="BlockFile.h" />
     <ClInclude Include="chainblocker.h" />
+    <ClInclude Include="CryptographicKey.h" />
     <ClInclude Include="CryptographicKeyPair.h" />
     <ClInclude Include="Cryptography.h" />
+    <ClInclude Include="ExposureType.h" />
     <ClInclude Include="OpenSslPointers.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
@@ -176,6 +179,7 @@
     <ClCompile Include="Blockchain.cpp" />
     <ClCompile Include="BlockFile.cpp" />
     <ClCompile Include="chainblocker.cpp" />
+    <ClCompile Include="CryptographicKey.cpp" />
     <ClCompile Include="Cryptography.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp">
