@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 
+#include "chainblocker.h"
 #include "TransactionInput.h"
 
 namespace ChainBlocker
@@ -23,7 +24,7 @@ namespace ChainBlocker
 			std::string GetSignature();
 			bool VerifySignature();
 
-			Transaction(
+			DllExport Transaction(
 				std::string senderPrivateKey,
 				std::string recipientPublicKey,
 				int amount,
