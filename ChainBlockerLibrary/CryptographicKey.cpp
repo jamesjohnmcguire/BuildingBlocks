@@ -25,12 +25,26 @@ std::string CryptographicKey::GetPrivateKeyPem()
 
 	BioSharedPointer privateKey = CreateKey(rawKey, false);
 
-	if (privateKey != NULL)
+	if (privateKey != nullptr)
 	{
 		std::string privateKeyPem = CreatePemKey(privateKey);
 	}
 
 	return privateKeyPem;
+}
+
+std::string CryptographicKey::GetPublicKeyPem()
+{
+	std::string publicKeyPem;
+
+	BioSharedPointer publicKey = CreateKey(rawKey, true);
+
+	if (publicKey != nullptr)
+	{
+		std::string publicKeyPem = CreatePemKey(publicKey);
+	}
+
+	return publicKeyPem;
 }
 
 CryptographicKey::CryptographicKey(AlgorythmType algorythmType)

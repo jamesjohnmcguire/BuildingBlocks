@@ -10,6 +10,8 @@ class CryptographicKey
 	public:
 		static std::unique_ptr<CryptographicKey> Create(AlgorythmType algorythmType);
 		std::string GetPrivateKeyPem();
+		std::string GetPublicKeyPem();
+
 		CryptographicKey(AlgorythmType algorythmType);
 
 	private:
