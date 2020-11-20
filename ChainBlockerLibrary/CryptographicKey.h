@@ -2,17 +2,18 @@
 #include <memory>
 #include <string>
 
+#include "chainblocker.h"
 #include "AlgorythmType.h"
 #include "OpenSslPointers.h"
 
 class CryptographicKey
 {
 	public:
-		static std::unique_ptr<CryptographicKey> Create(AlgorythmType algorythmType);
-		std::string GetPrivateKeyPem();
-		std::string GetPublicKeyPem();
+		DllExport static std::unique_ptr<CryptographicKey> Create(AlgorythmType algorythmType);
+		DllExport std::string GetPrivateKeyPem();
+		DllExport std::string GetPublicKeyPem();
 
-		CryptographicKey(AlgorythmType algorythmType);
+		DllExport CryptographicKey(AlgorythmType algorythmType);
 
 	private:
 		BioPointer CreateKey(RsaSharedPointer rsaKey, bool isPublicKey);

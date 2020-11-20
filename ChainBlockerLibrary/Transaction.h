@@ -22,7 +22,7 @@ namespace ChainBlocker
 			std::string GetRecipient();
 			// this is to prevent anybody else from spending funds in our wallet.
 			std::string GetSignature();
-			bool VerifySignature();
+			DllExport bool VerifySignature();
 
 			DllExport Transaction(
 				std::string senderPrivateKey,
