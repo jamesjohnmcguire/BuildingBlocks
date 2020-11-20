@@ -1,10 +1,14 @@
 #pragma warning(disable: 26495)
 #pragma warning(disable: 26812)
+
 #include "pch.h"
+
+#include <regex>
 
 #include "../ChainBlockerLibrary/chainblocker.h"
 #include "../ChainBlockerLibrary/Block.h"
 #include "../ChainBlockerLibrary/Cryptography.h"
+#include "../ChainBlockerLibrary/CryptographicKey.h"
 
 using namespace ChainBlocker;
 
@@ -87,4 +91,21 @@ TEST(Cryptography, CreateKeyPair)
 
 	key = keyPair->PublicKey;
 	ASSERT_NE(key, nullptr);
+}
+
+
+TEST(Cryptography, PEMFormat)
+{
+	CryptographicKey key = CryptographicKey(AlgorythmType::Rsa);
+	std::string pem = key.GetPublicKeyPem();
+
+	std::string expression = "-+BEGIN[a-zA-Z ]*-+\\n"\
+		"[A-Za-z0-9\/\\n+]+"\
+		"-+END[a-zA-Z ]*-+\\n";
+
+	std::regex regexExpression(expression);
+
+	bool matched = std::regex_match(pem, regexExpression);
+
+	ASSERT_TRUE(matched);
 }
