@@ -41,7 +41,7 @@ std::string CryptographicKey::GetPublicKeyPem()
 
 	if (publicKey != nullptr)
 	{
-		std::string publicKeyPem = CreatePemKey(publicKey);
+		publicKeyPem = CreatePemKey(publicKey);
 	}
 
 	return publicKeyPem;
