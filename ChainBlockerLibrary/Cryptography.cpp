@@ -55,6 +55,13 @@ namespace ChainBlocker
 			// log warning
 		}
 
+		size_t last = inputLength - 1;
+		while (input[last] == '=')
+		{
+			actualLength--;
+			last--;
+		}
+
 		*outputLength = actualLength;
 
 		std::unique_ptr<unsigned char> output(rawBuffer);

@@ -12,6 +12,19 @@
 
 using namespace ChainBlocker;
 
+std::string latinText = "Lorem ipsum dolor sit amet, consectetur "\
+	"adipiscing elit. Curabitur eget augue dolor. Suspendisse non dapibus "\
+	"enim, at convallis ipsum. Nulla vehicula eu ligula nec egestas. Nunc "\
+	"nec est id felis semper consectetur. Nulla facilisi. In viverra ex at "\
+	"erat scelerisque, id tincidunt dui commodo. In dictum quis ipsum et "\
+	"aliquam. Duis urna justo, mollis quis pulvinar quis, vestibulum vel "\
+	"arcu. Nam id gravida augue. Duis accumsan maximus congue. Donec sed "\
+	"egestas risus. Suspendisse suscipit elit sit amet leo malesuada, nec "\
+	"auctor velit vulputate. Morbi hendrerit tincidunt ligula, at auctor "\
+	"sem scelerisque iaculis. Phasellus ultricies elit nibh, vitae consequat "\
+	"lacus convallis vitae. Proin fringilla molestie sapien id pretium. "\
+	"Nullam condimentum mi vitae consequat malesuada.\n";
+
 TEST(TestCaseName, TestName)
 {
   EXPECT_EQ(1, 1);
@@ -25,6 +38,93 @@ TEST(BlockInitialization, SimpleBlock)
 	time_t timeStamp = block.GetTimeStamp();
 
 	EXPECT_TRUE(timeStamp > 0);
+}
+
+TEST(Base64, EncodeDecodeAscii)
+{
+	std::string text = "Lorem ipsum dolor sit amet, consectetur "\
+		"adipiscing elit. Curabitur eget augue dolor. Suspendisse non dapibus "\
+		"enim, at convallis ipsum. Nulla vehicula eu ligula nec egestas. Nunc "\
+		"nec est id felis semper consectetur. Nulla facilisi. In viverra ex at "\
+		"erat scelerisque, id tincidunt dui commodo. In dictum quis ipsum et "\
+		"aliquam. Duis urna justo, mollis quis pulvinar quis, vestibulum vel ";
+
+	Cryptography cryptography = Cryptography();
+
+	std::unique_ptr<char> encoded = cryptography.Base64Encode(
+		(unsigned char*)text.c_str(), text.length());
+
+	char* buffer = encoded.get();
+	size_t size = strlen(buffer);
+	size_t outputSize;
+
+	std::unique_ptr<unsigned char> decoded = cryptography.Base64Decode(
+		buffer, size, &outputSize);
+
+	buffer = (char*)decoded.get();
+	size = strlen(buffer);
+	int size2 = text.length();
+
+	std::string decodedText(buffer, 0, outputSize);
+
+	int result = text.compare(decodedText);
+
+	ASSERT_EQ(result, 0);
+}
+
+
+TEST(Base64, EncodeDecodeAsciiLoop)
+{
+	Cryptography cryptography = Cryptography();
+
+	size_t length = latinText.length();
+
+	for (size_t index = 1; index < length; index++)
+	{
+		std::string temp = latinText.substr(0, index);
+
+		std::unique_ptr<char> encoded = cryptography.Base64Encode(
+			(unsigned char*)temp.c_str(), temp.length());
+
+		char* buffer = encoded.get();
+		size_t size = strlen(buffer);
+		size_t outputSize;
+
+		std::unique_ptr<unsigned char> decoded = cryptography.Base64Decode(
+			buffer, size, &outputSize);
+
+		buffer = (char*)decoded.get();
+
+		int result = temp.compare(0, index, buffer, 0, index);
+
+		ASSERT_EQ(result, 0);
+	}
+}
+
+TEST(Base64, EncodeDecodeAsciiNewLine)
+{
+	std::string text = "Lorem ipsum dolor sit amet, consectetur\n";
+
+	Cryptography cryptography = Cryptography();
+
+	std::unique_ptr<char> encoded = cryptography.Base64Encode(
+		(unsigned char*)text.c_str(), text.length());
+
+	char* buffer = encoded.get();
+	size_t size = strlen(buffer);
+	size_t outputSize;
+
+	std::unique_ptr<unsigned char> decoded = cryptography.Base64Decode(
+		buffer, size, &outputSize);
+
+	buffer = (char*)decoded.get();
+	size = strlen(buffer);
+	int size2 = text.length();
+
+
+	int result = text.compare(buffer);
+
+	ASSERT_EQ(result, 0);
 }
 
 TEST(Cryptography, SignData)
@@ -67,13 +167,15 @@ TEST(Cryptography, SignData)
 		"wQIDAQAB\n"\
 		"-----END PUBLIC KEY-----\n";
 
+	std::string plainText = "My secret message.\n";
+
 	Cryptography cryptography = Cryptography();
 
-	std::string plainText = "My secret message.\n";
 	std::unique_ptr<char> signature =
 		cryptography.SignData(privateKey, plainText);
-	bool authentic = cryptography.VerifySignature(
-		publicKey, "My secret message.\n", signature.get());
+
+	bool authentic =
+		cryptography.VerifySignature(publicKey, plainText, signature.get());
 
 	ASSERT_TRUE(authentic);
 }
