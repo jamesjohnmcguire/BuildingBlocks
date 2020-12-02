@@ -25,6 +25,13 @@ namespace ChainBlocker
 	class Cryptography
 	{
 		public:
+			DllExport std::unique_ptr<unsigned char> Base64Decode(
+				std::string input,
+				size_t length,
+				size_t* outputLength);
+			DllExport std::unique_ptr<char> Base64Encode(
+				const unsigned char* input,
+				size_t length);
 			DllExport CryptographicKeyPair* CreateKeyPair();
 			DllExport std::unique_ptr<char> SignData(
 				std::string privateKey,
@@ -36,13 +43,6 @@ namespace ChainBlocker
 			DllExport ~Cryptography();
 
 		private:
-			std::unique_ptr<unsigned char> Base64Decode(
-				std::string input,
-				size_t length,
-				size_t* outputLength);
-			std::unique_ptr<char> Base64Encode(
-				const unsigned char* input,
-				size_t length);
 			BioPointer CreateKey(RsaSharedPointer rsaKey, bool isPublicKey);
 			std::string CreatePemKey(BioSharedPointer key);
 			RsaSharedPointer CreateRsaKey();

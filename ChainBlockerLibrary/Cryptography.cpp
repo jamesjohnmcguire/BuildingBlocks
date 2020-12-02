@@ -35,6 +35,61 @@ namespace ChainBlocker
 		return authentic;
 	}
 
+	std::unique_ptr<unsigned char> Cryptography::Base64Decode(
+		std::string input, size_t inputLength, size_t* outputLength)
+	{
+		const unsigned char* inputBuffer =
+			reinterpret_cast<const unsigned char*>(input.c_str());
+
+		const size_t bufferLength = 3 * inputLength / 4;
+
+		unsigned char* rawBuffer =
+			reinterpret_cast<unsigned char*>(calloc(bufferLength, 1));
+
+		int inputBufferLength = static_cast<int>(inputLength);
+		int actualLength =
+			EVP_DecodeBlock(rawBuffer, inputBuffer, inputBufferLength);
+
+		if (actualLength != bufferLength)
+		{
+			// log warning
+		}
+
+		*outputLength = actualLength;
+
+		std::unique_ptr<unsigned char> output(rawBuffer);
+
+		return output;
+	}
+
+	std::unique_ptr<char> Cryptography::Base64Encode(
+		const unsigned char* input, size_t inputLength)
+	{
+		size_t encodeLength = 4 * ((inputLength + 2) / 3);
+
+		// +1 for the terminating null
+		encodeLength = encodeLength + 1;
+
+		void* buffer = calloc(encodeLength, 1);
+		char* charBuffer = reinterpret_cast<char*>(buffer);
+
+		unsigned char* encodeBuffer =
+			reinterpret_cast<unsigned char*>(charBuffer);
+
+		int bufferLength = static_cast<int>(inputLength);
+		int outputLength =
+			EVP_EncodeBlock(encodeBuffer, input, bufferLength);
+
+		if (encodeLength != outputLength)
+		{
+			// log warning
+		}
+
+		std::unique_ptr<char> output(charBuffer);
+
+		return output;
+	}
+
 	// caller is responsible for freeing returned data.
 	CryptographicKeyPair* Cryptography::CreateKeyPair()
 	{
@@ -133,63 +188,6 @@ namespace ChainBlocker
 		ERR_free_strings();
 		EVP_cleanup();
 		CRYPTO_cleanup_all_ex_data();
-	}
-
-	std::unique_ptr<unsigned char> Cryptography::Base64Decode(
-		std::string input, size_t inputLength, size_t* outputLength)
-	{
-		const unsigned char* inputBuffer =
-			reinterpret_cast<const unsigned char*>(input.c_str());
-
-		const size_t bufferLength = 3 * inputLength / 4;
-
-		unsigned char* rawBuffer =
-			reinterpret_cast<unsigned char*>(calloc(bufferLength, 1));
-
-		std::unique_ptr<unsigned char> output(rawBuffer);
-
-		int decodeLength = static_cast<int>(inputLength);
-		int actualLength =
-			EVP_DecodeBlock(output.get(), inputBuffer, decodeLength);
-
-		if (decodeLength != *outputLength)
-		{
-			// log warning
-		}
-
-		// remove null terminators
-		size_t modifiedLength = actualLength;
-		*outputLength = modifiedLength - 2;
-
-		return output;
-	}
-
-	std::unique_ptr<char> Cryptography::Base64Encode(
-		const unsigned char* input, size_t inputLength)
-	{
-		size_t encodeLength = 4 * ((inputLength + 2) / 3);
-
-		// +1 for the terminating null
-		encodeLength = encodeLength + 1;
-
-		void* buffer = calloc(encodeLength, 1);
-		char* charBuffer = reinterpret_cast<char*>(buffer);
-
-		unsigned char* encodeBuffer =
-			reinterpret_cast<unsigned char*>(charBuffer);
-
-		int bufferLength = static_cast<int>(inputLength);
-		int outputLength =
-			EVP_EncodeBlock(encodeBuffer, input, bufferLength);
-
-		if (encodeLength != outputLength)
-		{
-			// log warning
-		}
-
-		std::unique_ptr<char> output(charBuffer);
-
-		return output;
 	}
 
 	BioPointer Cryptography::CreateKey(
