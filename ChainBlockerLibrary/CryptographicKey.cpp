@@ -19,6 +19,40 @@ std::unique_ptr<CryptographicKey> CryptographicKey::Create(AlgorythmType algoryt
 	return container;
 }
 
+std::string CryptographicKey::GetPrivateKeyBase64()
+{
+	std::string privateKeyBase64;
+
+	BioSharedPointer privateKey = CreateKey(rawKey, false);
+
+	if (privateKey != nullptr)
+	{
+		const std::string header = "-----BEGIN RSA PRIVATE KEY-----\n";
+		const std::string footer = "-----END RSA PRIVATE KEY-----\n";
+
+		std::string privateKeyPem = CreatePemKey(privateKey);
+
+		privateKeyBase64 = RemoveSubString(privateKeyPem, header);
+		privateKeyBase64 = RemoveSubString(privateKeyBase64, footer);
+	}
+
+	return privateKeyBase64;
+}
+
+std::string CryptographicKey::GetPublicKeyBase64()
+{
+	std::string publicKeyBase64;
+
+	BioSharedPointer publicKey = CreateKey(rawKey, true);
+
+	if (publicKey != nullptr)
+	{
+		publicKeyBase64 = CreatePemKey(publicKey);
+	}
+
+	return publicKeyBase64;
+}
+
 std::string CryptographicKey::GetPrivateKeyPem()
 {
 	std::string privateKeyPem;
@@ -27,7 +61,7 @@ std::string CryptographicKey::GetPrivateKeyPem()
 
 	if (privateKey != nullptr)
 	{
-		std::string privateKeyPem = CreatePemKey(privateKey);
+		privateKeyPem = CreatePemKey(privateKey);
 	}
 
 	return privateKeyPem;
@@ -138,4 +172,17 @@ RsaSharedPointer CryptographicKey::CreateRsaKey()
 	bigNumber = nullptr;
 
 	return rsaKey;
+}
+
+std::string CryptographicKey::RemoveSubString(
+	std::string source,
+	const std::string subString)
+{
+	size_t position = source.find(subString);
+	if (position != std::string::npos)
+	{
+		source.erase(position, subString.length());
+	}
+
+	return source;
 }
