@@ -6,6 +6,7 @@
 #include <regex>
 
 #include "../ChainBlockerLibrary/chainblocker.h"
+#include "../ChainBlockerLibrary/Base64.h"
 #include "../ChainBlockerLibrary/Block.h"
 #include "../ChainBlockerLibrary/Cryptography.h"
 #include "../ChainBlockerLibrary/CryptographicKey.h"
@@ -49,16 +50,14 @@ TEST(Base64, EncodeDecodeAscii)
 		"erat scelerisque, id tincidunt dui commodo. In dictum quis ipsum et "\
 		"aliquam. Duis urna justo, mollis quis pulvinar quis, vestibulum vel ";
 
-	Cryptography cryptography = Cryptography();
-
-	std::unique_ptr<char> encoded = cryptography.Base64Encode(
+	std::unique_ptr<char> encoded = Base64::Encode(
 		(unsigned char*)text.c_str(), text.length());
 
 	char* buffer = encoded.get();
 	size_t size = strlen(buffer);
 	size_t outputSize;
 
-	std::unique_ptr<unsigned char> decoded = cryptography.Base64Decode(
+	std::unique_ptr<unsigned char> decoded = Base64::Decode(
 		buffer, size, &outputSize);
 
 	buffer = (char*)decoded.get();
@@ -75,22 +74,20 @@ TEST(Base64, EncodeDecodeAscii)
 
 TEST(Base64, EncodeDecodeAsciiLoop)
 {
-	Cryptography cryptography = Cryptography();
-
 	size_t length = latinText.length();
 
 	for (size_t index = 1; index < length; index++)
 	{
 		std::string temp = latinText.substr(0, index);
 
-		std::unique_ptr<char> encoded = cryptography.Base64Encode(
+		std::unique_ptr<char> encoded = Base64::Encode(
 			(unsigned char*)temp.c_str(), temp.length());
 
 		char* buffer = encoded.get();
 		size_t size = strlen(buffer);
 		size_t outputSize;
 
-		std::unique_ptr<unsigned char> decoded = cryptography.Base64Decode(
+		std::unique_ptr<unsigned char> decoded = Base64::Decode(
 			buffer, size, &outputSize);
 
 		buffer = (char*)decoded.get();
@@ -105,16 +102,14 @@ TEST(Base64, EncodeDecodeAsciiNewLine)
 {
 	std::string text = "Lorem ipsum dolor sit amet, consectetur\n";
 
-	Cryptography cryptography = Cryptography();
-
-	std::unique_ptr<char> encoded = cryptography.Base64Encode(
+	std::unique_ptr<char> encoded = Base64::Encode(
 		(unsigned char*)text.c_str(), text.length());
 
 	char* buffer = encoded.get();
 	size_t size = strlen(buffer);
 	size_t outputSize;
 
-	std::unique_ptr<unsigned char> decoded = cryptography.Base64Decode(
+	std::unique_ptr<unsigned char> decoded = Base64::Decode(
 		buffer, size, &outputSize);
 
 	buffer = (char*)decoded.get();

@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "Base64.h"
 #include "Cryptography.h"
 
 namespace ChainBlocker
@@ -33,68 +34,6 @@ namespace ChainBlocker
 			publicKey, plainText, signatureBase64);
 
 		return authentic;
-	}
-
-	std::unique_ptr<unsigned char> Cryptography::Base64Decode(
-		std::string input, size_t inputLength, size_t* outputLength)
-	{
-		const unsigned char* inputBuffer =
-			reinterpret_cast<const unsigned char*>(input.c_str());
-
-		const size_t bufferLength = 3 * inputLength / 4;
-
-		unsigned char* rawBuffer =
-			reinterpret_cast<unsigned char*>(calloc(bufferLength, 1));
-
-		int inputBufferLength = static_cast<int>(inputLength);
-		int actualLength =
-			EVP_DecodeBlock(rawBuffer, inputBuffer, inputBufferLength);
-
-		if (actualLength != bufferLength)
-		{
-			// log warning
-		}
-
-		size_t last = inputLength - 1;
-		while (input[last] == '=')
-		{
-			actualLength--;
-			last--;
-		}
-
-		*outputLength = actualLength;
-
-		std::unique_ptr<unsigned char> output(rawBuffer);
-
-		return output;
-	}
-
-	std::unique_ptr<char> Cryptography::Base64Encode(
-		const unsigned char* input, size_t inputLength)
-	{
-		size_t encodeLength = 4 * ((inputLength + 2) / 3);
-
-		// +1 for the terminating null
-		encodeLength = encodeLength + 1;
-
-		void* buffer = calloc(encodeLength, 1);
-		char* charBuffer = reinterpret_cast<char*>(buffer);
-
-		unsigned char* encodeBuffer =
-			reinterpret_cast<unsigned char*>(charBuffer);
-
-		int bufferLength = static_cast<int>(inputLength);
-		int outputLength =
-			EVP_EncodeBlock(encodeBuffer, input, bufferLength);
-
-		if (encodeLength != outputLength)
-		{
-			// log warning
-		}
-
-		std::unique_ptr<char> output(charBuffer);
-
-		return output;
 	}
 
 	// caller is responsible for freeing returned data.
@@ -159,7 +98,7 @@ namespace ChainBlocker
 		unsigned char* signedData = RsaSignData(
 			std::move(privateRsaKey), data, dataLength, &outputLength);
 
-		output = Base64Encode(signedData, outputLength);
+		output = Base64::Encode(signedData, outputLength);
 
 		return output;
 	}
@@ -175,7 +114,7 @@ namespace ChainBlocker
 		RsaPointer publicRSA = GetRsaKey(publicKey, true);
 
 		std::unique_ptr<unsigned char> encodedData =
-			Base64Decode(signatureBase64, inputLength, &outputLength);
+			Base64::Decode(signatureBase64, inputLength, &outputLength);
 
 		unsigned char* input = (unsigned char*)plainText.c_str();
 		inputLength = plainText.length();
