@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <string>
+#include <vector>
 
 #include <openssl/evp.h>
 #include <openssl/err.h>
@@ -26,7 +27,7 @@ namespace ChainBlocker
 	{
 		public:
 			DllExport CryptographicKeyPair* CreateKeyPair();
-			DllExport std::unique_ptr<char> SignData(
+			DllExport std::vector<char> SignData(
 				std::string privateKey,
 				std::string plainText);
 			DllExport bool VerifySignature(
@@ -48,7 +49,7 @@ namespace ChainBlocker
 			bool RsaVerifySignature(RSA* publicKey,
 				const unsigned char* data,
 				size_t dataLength,
-				const std::unique_ptr<unsigned char> dataHash,
+				const std::vector<unsigned char> dataHash,
 				size_t dataHashLength);
 			bool VerifyKey(std::string pemKey, bool isPublicKey);
 	};

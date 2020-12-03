@@ -11,9 +11,9 @@ namespace ChainBlocker
 	{
 		Cryptography cryptography = Cryptography();
 
-		std::unique_ptr<char> signature =
+		std::vector<char> signature =
 			cryptography.SignData(privateKey, plainText);
-		std::string buffer = signature.get();
+		std::string buffer = signature.data();
 
 		size_t size = buffer.size() + 1;
 
@@ -83,11 +83,10 @@ namespace ChainBlocker
 		return keyPair;
 	}
 
-	std::unique_ptr<char> Cryptography::SignData(
+	std::vector<char> Cryptography::SignData(
 		std::string privateKey,
 		std::string plainText)
 	{
-		std::unique_ptr<char> output = nullptr;
 		size_t outputLength;
 
 		RsaPointer privateRsaKey = GetRsaKey(privateKey, false);
@@ -98,7 +97,7 @@ namespace ChainBlocker
 		unsigned char* signedData = RsaSignData(
 			std::move(privateRsaKey), data, dataLength, &outputLength);
 
-		output = Base64::Encode(signedData, outputLength);
+		std::vector<char> output = Base64::Encode(signedData, outputLength);
 
 		return output;
 	}
@@ -113,7 +112,7 @@ namespace ChainBlocker
 
 		RsaPointer publicRSA = GetRsaKey(publicKey, true);
 
-		std::unique_ptr<unsigned char> encodedData =
+		std::vector<unsigned char> encodedData =
 			Base64::Decode(signatureBase64, inputLength, &outputLength);
 
 		unsigned char* input = (unsigned char*)plainText.c_str();
@@ -123,7 +122,7 @@ namespace ChainBlocker
 			publicRSA.get(),
 			input,
 			inputLength,
-			std::move(encodedData),
+			encodedData,
 			outputLength);
 
 		return result;
@@ -284,7 +283,7 @@ namespace ChainBlocker
 		RSA* publicKey,
 		const unsigned char* data,
 		size_t dataLength,
-		const std::unique_ptr<unsigned char> dataHash,
+		const std::vector<unsigned char> dataHash,
 		size_t dataHashLength)
 	{
 		bool verified = false;
@@ -295,8 +294,8 @@ namespace ChainBlocker
 		EVP_PKEY* evpPublicKey = EVP_PKEY_new();
 		EVP_PKEY_assign_RSA(evpPublicKey, publicKey);
 
-		int successCode =
-			EVP_DigestVerifyInit(context, NULL, EVP_sha256(), NULL, evpPublicKey);
+		int successCode = EVP_DigestVerifyInit(
+			context, NULL, EVP_sha256(), NULL, evpPublicKey);
 
 		if (successCode > 0)
 		{
@@ -304,8 +303,8 @@ namespace ChainBlocker
 
 			if (successCode > 0)
 			{
-				int status =
-					EVP_DigestVerifyFinal(context, dataHash.get(), dataHashLength);
+				int status = EVP_DigestVerifyFinal(
+					context, dataHash.data(), dataHashLength);
 
 				if (status == 1)
 				{

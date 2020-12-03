@@ -77,10 +77,10 @@ void Test()
 	std::string plainText = "My secret message.\n";
 
 	std::cout << "Signing message..." << std::endl;
-	std::unique_ptr<char> signature =
+	std::vector<char> signature =
 		cryptography.SignData(privateKey, plainText);
 	bool authentic = cryptography.VerifySignature(
-		publicKey, "My secret message.\n", signature.get());
+		publicKey, "My secret message.\n", signature.data());
 
 	if (authentic)
 	{

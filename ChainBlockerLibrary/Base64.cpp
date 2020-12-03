@@ -1,11 +1,14 @@
 #include "pch.h"
+
 #include "Base64.h"
 
 namespace ChainBlocker
 {
-	std::unique_ptr<unsigned char> Base64::Decode(
+	std::vector<unsigned char> Base64::Decode(
 		std::string input, size_t inputLength, size_t* outputLength)
 	{
+		std::vector<unsigned char> output;
+
 		const unsigned char* inputBuffer =
 			reinterpret_cast<const unsigned char*>(input.c_str());
 
@@ -18,28 +21,34 @@ namespace ChainBlocker
 		int actualLength =
 			EVP_DecodeBlock(rawBuffer, inputBuffer, inputBufferLength);
 
-		if (actualLength != bufferLength)
+		if (actualLength > -1)
 		{
-			// log warning
+			if (actualLength != bufferLength)
+			{
+				// log warning
+			}
+
+			size_t last = inputLength - 1;
+			while (input[last] == '=')
+			{
+				actualLength--;
+				last--;
+			}
+
+			*outputLength = actualLength;
+
+			output = std::vector<unsigned char>(
+				rawBuffer, rawBuffer + actualLength);
 		}
-
-		size_t last = inputLength - 1;
-		while (input[last] == '=')
-		{
-			actualLength--;
-			last--;
-		}
-
-		*outputLength = actualLength;
-
-		std::unique_ptr<unsigned char> output(rawBuffer);
 
 		return output;
 	}
 
-	std::unique_ptr<char> Base64::Encode(
+	std::vector<char> Base64::Encode(
 		const unsigned char* input, size_t inputLength)
 	{
+		std::vector<char> output;
+
 		size_t encodeLength = 4 * ((inputLength + 2) / 3);
 
 		// +1 for the terminating null
@@ -55,12 +64,15 @@ namespace ChainBlocker
 		int outputLength =
 			EVP_EncodeBlock(encodeBuffer, input, bufferLength);
 
-		if (encodeLength != outputLength)
+		if (outputLength > -1)
 		{
-			// log warning
-		}
+			if (encodeLength != outputLength)
+			{
+				// log warning
+			}
 
-		std::unique_ptr<char> output(charBuffer);
+			output = std::vector<char>(charBuffer, charBuffer + outputLength);
+		}
 
 		return output;
 	}

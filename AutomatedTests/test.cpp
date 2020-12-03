@@ -50,19 +50,17 @@ TEST(Base64, EncodeDecodeAscii)
 		"erat scelerisque, id tincidunt dui commodo. In dictum quis ipsum et "\
 		"aliquam. Duis urna justo, mollis quis pulvinar quis, vestibulum vel ";
 
-	std::unique_ptr<char> encoded = Base64::Encode(
+	std::vector<char> encoded = Base64::Encode(
 		(unsigned char*)text.c_str(), text.length());
 
-	char* buffer = encoded.get();
-	size_t size = strlen(buffer);
+	char* buffer = encoded.data();
+	size_t size = encoded.size();
 	size_t outputSize;
 
-	std::unique_ptr<unsigned char> decoded = Base64::Decode(
+	std::vector<unsigned char> decoded = Base64::Decode(
 		buffer, size, &outputSize);
 
-	buffer = (char*)decoded.get();
-	size = strlen(buffer);
-	int size2 = text.length();
+	buffer = (char*)decoded.data();
 
 	std::string decodedText(buffer, 0, outputSize);
 
@@ -80,17 +78,17 @@ TEST(Base64, EncodeDecodeAsciiLoop)
 	{
 		std::string temp = latinText.substr(0, index);
 
-		std::unique_ptr<char> encoded = Base64::Encode(
+		std::vector<char> encoded = Base64::Encode(
 			(unsigned char*)temp.c_str(), temp.length());
 
-		char* buffer = encoded.get();
-		size_t size = strlen(buffer);
+		char* buffer = encoded.data();
+		size_t size = encoded.size();
 		size_t outputSize;
 
-		std::unique_ptr<unsigned char> decoded = Base64::Decode(
+		std::vector<unsigned char> decoded = Base64::Decode(
 			buffer, size, &outputSize);
 
-		buffer = (char*)decoded.get();
+		buffer = (char*)decoded.data();
 
 		int result = temp.compare(0, index, buffer, 0, index);
 
@@ -102,22 +100,19 @@ TEST(Base64, EncodeDecodeAsciiNewLine)
 {
 	std::string text = "Lorem ipsum dolor sit amet, consectetur\n";
 
-	std::unique_ptr<char> encoded = Base64::Encode(
+	std::vector<char> encoded = Base64::Encode(
 		(unsigned char*)text.c_str(), text.length());
 
-	char* buffer = encoded.get();
-	size_t size = strlen(buffer);
+	char* buffer = encoded.data();
+	size_t size = encoded.size();
 	size_t outputSize;
 
-	std::unique_ptr<unsigned char> decoded = Base64::Decode(
+	std::vector<unsigned char> decoded = Base64::Decode(
 		buffer, size, &outputSize);
 
-	buffer = (char*)decoded.get();
-	size = strlen(buffer);
-	int size2 = text.length();
+	buffer = (char*)decoded.data();
 
-
-	int result = text.compare(buffer);
+	int result = text.compare(0, outputSize, buffer, 0, outputSize);
 
 	ASSERT_EQ(result, 0);
 }
@@ -166,11 +161,13 @@ TEST(Cryptography, SignData)
 
 	Cryptography cryptography = Cryptography();
 
-	std::unique_ptr<char> signature =
+	std::vector<char> signature =
 		cryptography.SignData(privateKey, plainText);
 
+	std::string data = std::string(signature.data(), signature.size());
+
 	bool authentic =
-		cryptography.VerifySignature(publicKey, plainText, signature.get());
+		cryptography.VerifySignature(publicKey, plainText, data);
 
 	ASSERT_TRUE(authentic);
 }
