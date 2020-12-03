@@ -79,8 +79,10 @@ void Test()
 	std::cout << "Signing message..." << std::endl;
 	std::vector<char> signature =
 		cryptography.SignData(privateKey, plainText);
+
+	std::string data = std::string(signature.data(), signature.size());
 	bool authentic = cryptography.VerifySignature(
-		publicKey, "My secret message.\n", signature.data());
+		publicKey, "My secret message.\n", data);
 
 	if (authentic)
 	{
@@ -95,7 +97,7 @@ void Test()
 	std::string pem = key.GetPublicKeyPem();
 
 	std::string expression = "-+BEGIN[a-zA-Z ]*-+\\n"\
-		"[A-Za-z0-9\/\\n+]+"\
+		"[A-Za-z0-9/\\n+]+"\
 		"-+END[a-zA-Z ]*-+\\n";
 
 	std::regex regexExpression(expression);
