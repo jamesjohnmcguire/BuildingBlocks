@@ -5,6 +5,7 @@
 #include "chainblocker.h"
 #include "AlgorythmType.h"
 #include "OpenSslPointers.h"
+#include "PemFormatType.h"
 
 class CryptographicKey
 {
@@ -14,14 +15,19 @@ class CryptographicKey
 		DllExport std::string GetPrivateKeyBase64();
 		DllExport std::string GetPublicKeyBase64();
 		DllExport std::string GetPrivateKeyPem();
-		DllExport std::string GetPublicKeyPem();
+		DllExport std::string GetPublicKeyPem(PemFormatType formatType);
 
 		DllExport CryptographicKey(AlgorythmType algorythmType);
+		DllExport CryptographicKey(const std::string& privateKeyPem);
 
 	private:
-		BioPointer CreateKey(RsaSharedPointer rsaKey, bool isPublicKey);
+		BioPointer CreateKey(
+			RsaSharedPointer rsaKey,
+			bool isPublicKey,
+			PemFormatType formatType);
 		std::string CreatePemKey(BioSharedPointer key);
 		static RsaSharedPointer CreateRsaKey();
+		RsaSharedPointer GetRsaKey(std::string privateKey, bool isPublicKey);
 		std::string RemoveSubString(
 			std::string source, const std::string subString);
 

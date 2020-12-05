@@ -71,6 +71,29 @@ void Test()
 
 	Testing();
 
+	CryptographicKey key = CryptographicKey(privateKey);
+
+	std::string newPublicKey = key.GetPublicKeyPem(PemFormatType::Pkcs1Rsa);
+	std::cout << newPublicKey << std::endl;
+
+	key = CryptographicKey(AlgorythmType::Rsa);
+	std::string pem = key.GetPublicKeyPem(PemFormatType::Pkcs1Rsa);
+
+	std::string expression = "-+BEGIN[a-zA-Z ]*-+\\n"\
+		"[A-Za-z0-9/\\n+]+"\
+		"-+END[a-zA-Z ]*-+\\n";
+
+	std::regex regexExpression(expression);
+
+	if (std::regex_match(pem, regexExpression))
+	{
+		std::cout << "PEM format verified" << std::endl;
+	}
+	else
+	{
+		std::cout << "PEM format NOT verified" << std::endl;
+	}
+
 	std::cout << "Testing message signing..." << std::endl;
 	Cryptography cryptography = Cryptography();
 
@@ -91,24 +114,6 @@ void Test()
 	else
 	{
 		std::cout << "Signed data NOT verified" << std::endl;
-	}
-
-	CryptographicKey key = CryptographicKey(AlgorythmType::Rsa);
-	std::string pem = key.GetPublicKeyPem();
-
-	std::string expression = "-+BEGIN[a-zA-Z ]*-+\\n"\
-		"[A-Za-z0-9/\\n+]+"\
-		"-+END[a-zA-Z ]*-+\\n";
-
-	std::regex regexExpression(expression);
-
-	if (std::regex_match(pem, regexExpression))
-	{
-		std::cout << "PEM format verified" << std::endl;
-	}
-	else
-	{
-		std::cout << "PEM format NOT verified" << std::endl;
 	}
 
 	//////////////////////////////////////////////////////////////////////

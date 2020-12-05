@@ -23,7 +23,8 @@ std::string CryptographicKey::GetPrivateKeyBase64()
 {
 	std::string privateKeyBase64;
 
-	BioSharedPointer privateKey = CreateKey(rawKey, false);
+	BioSharedPointer privateKey =
+		CreateKey(rawKey, false, PemFormatType::Pkcs1Rsa);
 
 	if (privateKey != nullptr)
 	{
@@ -43,7 +44,8 @@ std::string CryptographicKey::GetPublicKeyBase64()
 {
 	std::string publicKeyBase64;
 
-	BioSharedPointer publicKey = CreateKey(rawKey, true);
+	BioSharedPointer publicKey =
+		CreateKey(rawKey, true, PemFormatType::Pkcs1Rsa);
 
 	if (publicKey != nullptr)
 	{
@@ -57,7 +59,8 @@ std::string CryptographicKey::GetPrivateKeyPem()
 {
 	std::string privateKeyPem;
 
-	BioSharedPointer privateKey = CreateKey(rawKey, false);
+	BioSharedPointer privateKey =
+		CreateKey(rawKey, false, PemFormatType::Pkcs1Rsa);
 
 	if (privateKey != nullptr)
 	{
@@ -67,11 +70,12 @@ std::string CryptographicKey::GetPrivateKeyPem()
 	return privateKeyPem;
 }
 
-std::string CryptographicKey::GetPublicKeyPem()
+std::string CryptographicKey::GetPublicKeyPem(PemFormatType formatType)
 {
 	std::string publicKeyPem;
 
-	BioSharedPointer publicKey = CreateKey(rawKey, true);
+	BioSharedPointer publicKey =
+		CreateKey(rawKey, true, formatType);
 
 	if (publicKey != nullptr)
 	{
@@ -95,8 +99,13 @@ CryptographicKey::CryptographicKey(AlgorythmType algorythmType)
 	}
 }
 
+CryptographicKey::CryptographicKey(const std::string& privateKeyPem)
+{
+	 rawKey = GetRsaKey(privateKeyPem, false);
+}
+
 BioPointer CryptographicKey::CreateKey(
-	RsaSharedPointer rsaKey, bool isPublicKey)
+	RsaSharedPointer rsaKey, bool isPublicKey, PemFormatType formatType)
 {
 	BioPointer key = nullptr;
 
@@ -107,7 +116,16 @@ BioPointer CryptographicKey::CreateKey(
 
 	if (isPublicKey == true)
 	{
-		successCode = PEM_write_bio_RSAPublicKey(bioKey, rsaKey.get());
+		if (formatType == PemFormatType::Pkcs1Rsa)
+		{
+			// -----BEGIN RSA PUBLIC KEY-----
+			successCode = PEM_write_bio_RSAPublicKey(bioKey, rsaKey.get());
+		}
+		else
+		{
+			// -----BEGIN PUBLIC KEY-----
+			successCode = PEM_write_bio_RSA_PUBKEY(bioKey, rsaKey.get());
+		}
 	}
 	else
 	{
@@ -170,6 +188,34 @@ RsaSharedPointer CryptographicKey::CreateRsaKey()
 
 	BN_free(bigNumber);
 	bigNumber = nullptr;
+
+	return rsaKey;
+}
+
+RsaSharedPointer CryptographicKey::GetRsaKey(
+	std::string privateKey, bool isPublicKey)
+{
+	RsaSharedPointer rsaKey = nullptr;
+
+	const char* string = privateKey.c_str();
+	BIO* bioKey = BIO_new_mem_buf((void*)string, -1);
+
+	if (bioKey != nullptr)
+	{
+		RSA* rsa = nullptr;
+
+		if (isPublicKey == true)
+		{
+			rsa = PEM_read_bio_RSA_PUBKEY(bioKey, &rsa, nullptr, nullptr);
+			rsa = PEM_read_bio_RSAPublicKey(bioKey, &rsa, nullptr, nullptr);
+		}
+		else
+		{
+			rsa = PEM_read_bio_RSAPrivateKey(bioKey, &rsa, nullptr, nullptr);
+		}
+
+		rsaKey.reset(rsa);
+	}
 
 	return rsaKey;
 }

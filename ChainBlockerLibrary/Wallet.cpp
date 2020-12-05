@@ -35,7 +35,7 @@ namespace ChainBlocker
 	{
 		CryptographicKey* key = cryptographicKey.get();
 
-		std::string pemKey = key->GetPublicKeyPem();
+		std::string pemKey = key->GetPublicKeyPem(PemFormatType::Pkcs1Rsa);
 
 		return pemKey;
 	}
