@@ -1,8 +1,11 @@
 #pragma once
 #include "OpenSslPointers.h"
 
-struct CryptographicKeyPair
+namespace ChainBlocker
 {
-	BioPointer PrivateKey;
-	BioPointer PublicKey;
-};
+	struct CryptographicKeyPair
+	{
+		BioPointer PrivateKey;
+		BioPointer PublicKey;
+	};
+}

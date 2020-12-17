@@ -7,12 +7,15 @@
 
 #include "OpenSslPointers.h"
 
-class Wallet
+namespace ChainBlocker
 {
+	class Wallet
+	{
 	public:
-		Wallet();
+		DllExport Wallet();
 
 	private:
 		BioPointer privateKey;
 		BioPointer publicKey;
-};
+	};
+}

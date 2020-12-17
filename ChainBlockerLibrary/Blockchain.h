@@ -3,20 +3,23 @@
 #include <vector>
 #include "Block.h"
 
-using namespace std;
-
-class Blockchain
+namespace ChainBlocker
 {
+	class Blockchain
+	{
 	public:
-		Blockchain();
+		DllExport Blockchain();
+		DllExport Blockchain(const Blockchain& other);
+		~Blockchain() = default;
 
-		void AddBlock(Block newBlock);
-		void SaveBlock(Block block);
-		bool ValidateChain();
+		DllExport void AddBlock(Block newBlock);
+		DllExport void SaveBlock(Block block);
+		DllExport bool ValidateChain();
 
 	private:
 		uint32_t difficulty;
-		vector<Block> chain;
+		std::vector<Block> chain;
 
 		Block GetLastBlock() const;
-};
+	};
+}
