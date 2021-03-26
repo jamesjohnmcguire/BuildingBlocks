@@ -18,7 +18,9 @@ class CryptographicKey
 		DllExport std::string GetPublicKeyPem(PemFormatType formatType);
 
 		DllExport CryptographicKey(AlgorythmType algorythmType);
-		DllExport CryptographicKey(const std::string& privateKeyPem);
+		DllExport CryptographicKey(
+			const std::string& keyPem,
+			bool publicKeyOnly = true);
 
 	private:
 		BioPointer CreateKey(
@@ -31,5 +33,6 @@ class CryptographicKey
 		std::string RemoveSubString(
 			std::string source, const std::string subString);
 
+		bool publicKeyOnly;
 		RsaSharedPointer rawKey;
 };

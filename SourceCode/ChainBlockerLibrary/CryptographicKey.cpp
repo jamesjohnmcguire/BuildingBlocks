@@ -1,7 +1,8 @@
 #include "pch.h"
 #include "CryptographicKey.h"
 
-std::unique_ptr<CryptographicKey> CryptographicKey::Create(AlgorythmType algorythmType)
+std::unique_ptr<CryptographicKey> CryptographicKey::Create(
+	AlgorythmType algorythmType)
 {
 	std::unique_ptr<CryptographicKey> container = nullptr;
 
@@ -23,18 +24,21 @@ std::string CryptographicKey::GetPrivateKeyBase64()
 {
 	std::string privateKeyBase64;
 
-	BioSharedPointer privateKey =
-		CreateKey(rawKey, false, PemFormatType::Pkcs1Rsa);
-
-	if (privateKey != nullptr)
+	if (publicKeyOnly == false)
 	{
-		const std::string header = "-----BEGIN RSA PRIVATE KEY-----\n";
-		const std::string footer = "-----END RSA PRIVATE KEY-----\n";
+		BioSharedPointer privateKey =
+			CreateKey(rawKey, false, PemFormatType::Pkcs1Rsa);
 
-		std::string privateKeyPem = CreatePemKey(privateKey);
+		if (privateKey != nullptr)
+		{
+			const std::string header = "-----BEGIN RSA PRIVATE KEY-----\n";
+			const std::string footer = "-----END RSA PRIVATE KEY-----\n";
 
-		privateKeyBase64 = RemoveSubString(privateKeyPem, header);
-		privateKeyBase64 = RemoveSubString(privateKeyBase64, footer);
+			std::string privateKeyPem = CreatePemKey(privateKey);
+
+			privateKeyBase64 = RemoveSubString(privateKeyPem, header);
+			privateKeyBase64 = RemoveSubString(privateKeyBase64, footer);
+		}
 	}
 
 	return privateKeyBase64;
@@ -59,12 +63,15 @@ std::string CryptographicKey::GetPrivateKeyPem()
 {
 	std::string privateKeyPem;
 
-	BioSharedPointer privateKey =
-		CreateKey(rawKey, false, PemFormatType::Pkcs1Rsa);
-
-	if (privateKey != nullptr)
+	if (publicKeyOnly == false)
 	{
-		privateKeyPem = CreatePemKey(privateKey);
+		BioSharedPointer privateKey =
+			CreateKey(rawKey, false, PemFormatType::Pkcs1Rsa);
+
+		if (privateKey != nullptr)
+		{
+			privateKeyPem = CreatePemKey(privateKey);
+		}
 	}
 
 	return privateKeyPem;
@@ -99,9 +106,12 @@ CryptographicKey::CryptographicKey(AlgorythmType algorythmType)
 	}
 }
 
-CryptographicKey::CryptographicKey(const std::string& privateKeyPem)
+CryptographicKey::CryptographicKey(
+	const std::string& keyPem, bool publicKeyOnly)
 {
-	 rawKey = GetRsaKey(privateKeyPem, false);
+	CryptographicKey::publicKeyOnly = publicKeyOnly;
+
+	rawKey = GetRsaKey(keyPem, publicKeyOnly);
 }
 
 BioPointer CryptographicKey::CreateKey(
