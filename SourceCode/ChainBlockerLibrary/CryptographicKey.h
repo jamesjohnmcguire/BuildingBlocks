@@ -20,7 +20,7 @@ class CryptographicKey
 		DllExport CryptographicKey(AlgorythmType algorythmType);
 		DllExport CryptographicKey(
 			const std::string& keyPem,
-			bool publicKeyOnly = true);
+			bool publicKeyOnly = false);
 
 	private:
 		BioPointer CreateKey(

@@ -93,6 +93,7 @@ std::string CryptographicKey::GetPublicKeyPem(PemFormatType formatType)
 }
 
 CryptographicKey::CryptographicKey(AlgorythmType algorythmType)
+	: publicKeyOnly(false)
 {
 	switch (algorythmType)
 	{
