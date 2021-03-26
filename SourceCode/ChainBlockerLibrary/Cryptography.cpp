@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "Base64.h"
 #include "Cryptography.h"
 
 namespace ChainBlocker
@@ -10,9 +11,9 @@ namespace ChainBlocker
 	{
 		Cryptography cryptography = Cryptography();
 
-		std::unique_ptr<char> signature =
+		std::vector<char> signature =
 			cryptography.SignData(privateKey, plainText);
-		std::string buffer = signature.get();
+		std::string buffer = signature.data();
 
 		size_t size = buffer.size() + 1;
 
@@ -35,60 +36,10 @@ namespace ChainBlocker
 		return authentic;
 	}
 
-	// caller is responsible for freeing returned data.
-	CryptographicKeyPair* Cryptography::CreateKeyPair()
-	{
-		CryptographicKeyPair* keyPair = NULL;
-
-		RsaPointer rsa = CreateRsaKey();
-
-		if (rsa != NULL)
-		{
-			bool verified;
-			keyPair = new CryptographicKeyPair;
-
-			if (keyPair != NULL)
-			{
-				BioPointer privateKey = CreateKey(std::move(rsa), false);
-
-				if (privateKey != NULL)
-				{
-					char* privateKeyPem = CreatePemKey(std::move(privateKey));
-
-					if (privateKeyPem != NULL)
-					{
-						verified = VerifyKey(privateKeyPem, false);
-						free(privateKeyPem);
-
-						keyPair->PrivateKey = std::move(privateKey);
-					}
-				}
-
-				BioPointer publicKey = CreateKey(std::move(rsa), true);
-
-				if (publicKey != NULL)
-				{
-					char* publicKeyPem = CreatePemKey(std::move(publicKey));
-
-					if (publicKeyPem != NULL)
-					{
-						verified = VerifyKey(publicKeyPem, true);
-						free(publicKeyPem);
-
-						keyPair->PublicKey = std::move(publicKey);
-					}
-				}
-			}
-		}
-
-		return keyPair;
-	}
-
-	std::unique_ptr<char> Cryptography::SignData(
+	std::vector<char> Cryptography::SignData(
 		std::string privateKey,
 		std::string plainText)
 	{
-		std::unique_ptr<char> output = nullptr;
 		size_t outputLength;
 
 		RsaPointer privateRsaKey = GetRsaKey(privateKey, false);
@@ -96,10 +47,10 @@ namespace ChainBlocker
 		unsigned char* data = (unsigned char*)plainText.c_str();
 		size_t dataLength = plainText.length();
 
-		unsigned char* signedData =
-			RsaSignData(std::move(privateRsaKey), data, dataLength, &outputLength);
+		unsigned char* signedData = RsaSignData(
+			std::move(privateRsaKey), data, dataLength, &outputLength);
 
-		output = Base64Encode(signedData, outputLength);
+		std::vector<char> output = Base64::Encode(signedData, outputLength);
 
 		return output;
 	}
@@ -114,8 +65,8 @@ namespace ChainBlocker
 
 		RsaPointer publicRSA = GetRsaKey(publicKey, true);
 
-		std::unique_ptr<unsigned char> encodedData =
-			Base64Decode(signatureBase64, inputLength, &outputLength);
+		std::vector<unsigned char> encodedData =
+			Base64::Decode(signatureBase64, inputLength, &outputLength);
 
 		unsigned char* input = (unsigned char*)plainText.c_str();
 		inputLength = plainText.length();
@@ -124,7 +75,7 @@ namespace ChainBlocker
 			publicRSA.get(),
 			input,
 			inputLength,
-			std::move(encodedData),
+			encodedData,
 			outputLength);
 
 		return result;
@@ -137,64 +88,8 @@ namespace ChainBlocker
 		CRYPTO_cleanup_all_ex_data();
 	}
 
-	std::unique_ptr<unsigned char> Cryptography::Base64Decode(
-		std::string input, size_t inputLength, size_t* outputLength)
-	{
-		const unsigned char* inputBuffer =
-			reinterpret_cast<const unsigned char*>(input.c_str());
-
-		const size_t bufferLength = 3 * inputLength / 4;
-
-		unsigned char* rawBuffer =
-			reinterpret_cast<unsigned char*>(calloc(bufferLength, 1));
-
-		std::unique_ptr<unsigned char> output(rawBuffer);
-
-		int decodeLength = static_cast<int>(inputLength);
-		int actualLength =
-			EVP_DecodeBlock(output.get(), inputBuffer, decodeLength);
-
-		if (decodeLength != *outputLength)
-		{
-			// log warning
-		}
-
-		// remove null terminators
-		size_t modifiedLength = actualLength;
-		*outputLength = modifiedLength - 2;
-
-		return output;
-	}
-
-	std::unique_ptr<char> Cryptography::Base64Encode(
-		const unsigned char* input, size_t inputLength)
-	{
-		size_t encodeLength = 4 * ((inputLength + 2) / 3);
-
-		// +1 for the terminating null
-		encodeLength = encodeLength + 1;
-
-		void* buffer = calloc(encodeLength, 1);
-		char* charBuffer = reinterpret_cast<char*>(buffer);
-
-		std::unique_ptr<char> output(charBuffer);
-
-		unsigned char* encodeBuffer =
-			reinterpret_cast<unsigned char*>(output.get());
-
-		int bufferLength = static_cast<int>(inputLength);
-		int outputLength =
-			EVP_EncodeBlock(encodeBuffer, input, bufferLength);
-
-		if (encodeLength != outputLength)
-		{
-			// log warning
-		}
-
-		return output;
-	}
-
-	BioPointer Cryptography::CreateKey(RsaPointer rsaKey, bool isPublicKey)
+	BioPointer Cryptography::CreateKey(
+		RsaSharedPointer rsaKey, bool isPublicKey)
 	{
 		BioPointer key = nullptr;
 
@@ -225,24 +120,28 @@ namespace ChainBlocker
 		return key;
 	}
 
-	char* Cryptography::CreatePemKey(BioPointer key)
+	std::string Cryptography::CreatePemKey(BioSharedPointer key)
 	{
+		std::string keyPem;
+
 		int keyLength = BIO_pending(key.get());
-		char* keyPem = (char*)malloc((size_t)keyLength + 1);
+		char* buffer = (char*)malloc((size_t)keyLength + 1);
 
-		BIO_read(key.get(), keyPem, keyLength);
+		BIO_read(key.get(), buffer, keyLength);
 
-		if (keyPem != NULL)
+		if (buffer != nullptr)
 		{
-			keyPem[keyLength] = '\0';
+			buffer[keyLength] = '\0';
+
+			keyPem = buffer;
 		}
 
 		return keyPem;
 	}
 
-	RsaPointer Cryptography::CreateRsaKey()
+	RsaSharedPointer Cryptography::CreateRsaKey()
 	{
-		RsaPointer rsaKey = nullptr;
+		RsaSharedPointer rsaKey = nullptr;
 		BIGNUM* bigNumber = nullptr;
 		unsigned long algorythmType = RSA_F4;
 		int bits = 2048;
@@ -258,7 +157,7 @@ namespace ChainBlocker
 
 			if (successCode == 1)
 			{
-				RsaPointer rsaKey(rsa);
+				rsaKey.reset(rsa);
 			}
 		}
 
@@ -337,7 +236,7 @@ namespace ChainBlocker
 		RSA* publicKey,
 		const unsigned char* data,
 		size_t dataLength,
-		const std::unique_ptr<unsigned char> dataHash,
+		const std::vector<unsigned char> dataHash,
 		size_t dataHashLength)
 	{
 		bool verified = false;
@@ -348,8 +247,8 @@ namespace ChainBlocker
 		EVP_PKEY* evpPublicKey = EVP_PKEY_new();
 		EVP_PKEY_assign_RSA(evpPublicKey, publicKey);
 
-		int successCode =
-			EVP_DigestVerifyInit(context, NULL, EVP_sha256(), NULL, evpPublicKey);
+		int successCode = EVP_DigestVerifyInit(
+			context, NULL, EVP_sha256(), NULL, evpPublicKey);
 
 		if (successCode > 0)
 		{
@@ -357,8 +256,8 @@ namespace ChainBlocker
 
 			if (successCode > 0)
 			{
-				int status =
-					EVP_DigestVerifyFinal(context, dataHash.get(), dataHashLength);
+				int status = EVP_DigestVerifyFinal(
+					context, dataHash.data(), dataHashLength);
 
 				if (status == 1)
 				{
@@ -372,31 +271,43 @@ namespace ChainBlocker
 		return verified;
 	}
 
-	bool Cryptography::VerifyKey(char* pemKey, bool isPublicKey)
+	bool Cryptography::VerifyKey(std::string pemKey, bool isPublicKey)
 	{
 		bool verified = false;
 
-		BIO* key = BIO_new_mem_buf((void*)pemKey, -1);
-		if (key != NULL)
+		size_t size = pemKey.size() + 1;
+		void* buffer = malloc(size + 1);
+		char* charBuffer = (char*)buffer;
+
+		if (charBuffer != nullptr)
 		{
-			EVP_PKEY* evpKey = NULL;
+			pemKey.copy(charBuffer, pemKey.size());
 
-			if (isPublicKey == true)
+			BIO* key = BIO_new_mem_buf(buffer, -1);
+
+			if (key != nullptr)
 			{
-				evpKey = PEM_read_bio_PUBKEY(key, &evpKey, NULL, NULL);
-			}
-			else
-			{
-				// PEM_read_bio_RSAPrivateKey
-				evpKey = PEM_read_bio_PrivateKey(key, &evpKey, NULL, NULL);
+				EVP_PKEY* evpKey = nullptr;
+
+				if (isPublicKey == true)
+				{
+					evpKey = PEM_read_bio_PUBKEY(key, &evpKey, nullptr, nullptr);
+				}
+				else
+				{
+					// PEM_read_bio_RSAPrivateKey
+					evpKey = PEM_read_bio_PrivateKey(key, &evpKey, nullptr, nullptr);
+				}
+
+				if (evpKey != nullptr)
+				{
+					verified = true;
+				}
+
+				BIO_free(key);
 			}
 
-			if (evpKey != NULL)
-			{
-				verified = true;
-			}
-
-			BIO_free(key);
+			free(buffer);
 		}
 
 		return verified;

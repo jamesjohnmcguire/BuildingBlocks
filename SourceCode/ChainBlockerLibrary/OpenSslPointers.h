@@ -38,6 +38,10 @@ struct RsaDeleter
 	}
 };
 
-using EvpKeyPointer = std::unique_ptr<EVP_PKEY, EvpKeyDeleter>;
 using BioPointer = std::unique_ptr<BIO, BioDeleter>;
+using EvpKeyPointer = std::unique_ptr<EVP_PKEY, EvpKeyDeleter>;
 using RsaPointer = std::unique_ptr<RSA, RsaDeleter>;
+
+using BioSharedPointer = std::shared_ptr<BIO>;
+using EvpKeySharedPointer = std::shared_ptr<EVP_PKEY>;
+using RsaSharedPointer = std::shared_ptr<RSA>;
