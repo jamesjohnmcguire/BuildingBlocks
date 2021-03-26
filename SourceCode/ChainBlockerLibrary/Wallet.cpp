@@ -6,16 +6,29 @@
 namespace ChainBlocker
 {
 	Wallet::Wallet()
-		: privateKey(nullptr), publicKey(nullptr)
+		: cryptographicKey(nullptr)
 	{
 		Cryptography cryptography = Cryptography();
 
-		CryptographicKeyPair* keyPair = cryptography.CreateKeyPair();
+		cryptographicKey = std::make_shared<CryptographicKey>(
+			CryptographicKey(AlgorythmType::Rsa));
+	}
 
-		if (keyPair != NULL)
-		{
-			privateKey = std::move(keyPair->PrivateKey);
-			publicKey = std::move(keyPair->PublicKey);
-		}
+	std::string Wallet::GetPrivateKeyPem()
+	{
+		CryptographicKey* key = cryptographicKey.get();
+
+		std::string pemKey = key->GetPrivateKeyPem();
+
+		return pemKey;
+	}
+
+	std::string Wallet::GetPublicKeyPem()
+	{
+		CryptographicKey* key = cryptographicKey.get();
+
+		std::string pemKey = key->GetPublicKeyPem(PemFormatType::Pkcs1Rsa);
+
+		return pemKey;
 	}
 }

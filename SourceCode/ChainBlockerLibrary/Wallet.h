@@ -5,17 +5,19 @@
 #include <openssl/pem.h>
 #include <exception>
 
+#include "CryptographicKey.h"
 #include "OpenSslPointers.h"
 
 namespace ChainBlocker
 {
 	class Wallet
 	{
-	public:
-		DllExport Wallet();
+		public:
+			DllExport std::string GetPrivateKeyPem();
+			DllExport std::string GetPublicKeyPem();
+			DllExport Wallet();
 
-	private:
-		BioPointer privateKey;
-		BioPointer publicKey;
+		private:
+			std::shared_ptr<CryptographicKey> cryptographicKey;
 	};
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <string>
+#include <vector>
 
 #include <openssl/evp.h>
 #include <openssl/err.h>
@@ -25,8 +26,7 @@ namespace ChainBlocker
 	class Cryptography
 	{
 		public:
-			DllExport CryptographicKeyPair* CreateKeyPair();
-			DllExport std::unique_ptr<char> SignData(
+			DllExport std::vector<char> SignData(
 				std::string privateKey,
 				std::string plainText);
 			DllExport bool VerifySignature(
@@ -36,16 +36,9 @@ namespace ChainBlocker
 			DllExport ~Cryptography();
 
 		private:
-			std::unique_ptr<unsigned char> Base64Decode(
-				std::string input,
-				size_t length,
-				size_t* outputLength);
-			std::unique_ptr<char> Base64Encode(
-				const unsigned char* input,
-				size_t length);
-			BioPointer CreateKey(RsaPointer rsaKey, bool isPublicKey);
-			char* CreatePemKey(BioPointer key);
-			RsaPointer CreateRsaKey();
+			BioPointer CreateKey(RsaSharedPointer rsaKey, bool isPublicKey);
+			std::string CreatePemKey(BioSharedPointer key);
+			RsaSharedPointer CreateRsaKey();
 			RsaPointer GetRsaKey(std::string privateKey, bool isPublicKey);
 			unsigned char* RsaSignData(
 				RsaPointer privateKey,
@@ -55,8 +48,8 @@ namespace ChainBlocker
 			bool RsaVerifySignature(RSA* publicKey,
 				const unsigned char* data,
 				size_t dataLength,
-				const std::unique_ptr<unsigned char> dataHash,
+				const std::vector<unsigned char> dataHash,
 				size_t dataHashLength);
-			bool VerifyKey(char* pemKey, bool isPublicKey);
+			bool VerifyKey(std::string pemKey, bool isPublicKey);
 	};
 }
