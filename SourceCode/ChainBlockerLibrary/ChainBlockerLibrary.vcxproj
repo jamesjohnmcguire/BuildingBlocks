@@ -163,7 +163,6 @@
     <ClInclude Include="BlockFile.h" />
     <ClInclude Include="chainblocker.h" />
     <ClInclude Include="CryptographicKey.h" />
-    <ClInclude Include="CryptographicKeyPair.h" />
     <ClInclude Include="Cryptography.h" />
     <ClInclude Include="ExposureType.h" />
     <ClInclude Include="OpenSslPointers.h" />

@@ -26,7 +26,6 @@ namespace ChainBlocker
 	class Cryptography
 	{
 		public:
-			DllExport CryptographicKeyPair* CreateKeyPair();
 			DllExport std::vector<char> SignData(
 				std::string privateKey,
 				std::string plainText);

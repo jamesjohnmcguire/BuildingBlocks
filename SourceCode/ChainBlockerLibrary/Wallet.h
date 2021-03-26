@@ -19,7 +19,5 @@ namespace ChainBlocker
 
 		private:
 			std::shared_ptr<CryptographicKey> cryptographicKey;
-			BioSharedPointer privateKey;
-			BioSharedPointer publicKey;
 	};
 }

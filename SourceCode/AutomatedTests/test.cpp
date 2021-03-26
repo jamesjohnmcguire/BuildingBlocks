@@ -173,22 +173,6 @@ TEST(Cryptography, SignData)
 	ASSERT_TRUE(authentic);
 }
 
-TEST(Cryptography, CreateKeyPair)
-{
-	Cryptography cryptography = Cryptography();
-
-	CryptographicKeyPair* keyPair = cryptography.CreateKeyPair();
-
-	ASSERT_NE(keyPair, nullptr);
-
-	BioSharedPointer key = keyPair->PrivateKey;
-	ASSERT_NE(key, nullptr);
-
-	key = keyPair->PublicKey;
-	ASSERT_NE(key, nullptr);
-}
-
-
 TEST(Cryptography, PEMFormat)
 {
 	CryptographicKey key = CryptographicKey(AlgorythmType::Rsa);

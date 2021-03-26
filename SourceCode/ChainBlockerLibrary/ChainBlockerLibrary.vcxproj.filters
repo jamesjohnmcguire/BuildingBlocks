@@ -42,9 +42,6 @@
     <ClInclude Include="Cryptography.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CryptographicKeyPair.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="OpenSslPointers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -110,10 +107,10 @@
     <ClCompile Include="TransactionOutput.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CryptographicKey.cpp">
+    <ClCompile Include="Base64.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Base64.cpp">
+    <ClCompile Include="CryptographicKey.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

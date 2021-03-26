@@ -36,53 +36,6 @@ namespace ChainBlocker
 		return authentic;
 	}
 
-	// caller is responsible for freeing returned data.
-	CryptographicKeyPair* Cryptography::CreateKeyPair()
-	{
-		CryptographicKeyPair* keyPair = NULL;
-
-		RsaSharedPointer rsa = CreateRsaKey();
-
-		if (rsa != NULL)
-		{
-			bool verified;
-			keyPair = new CryptographicKeyPair;
-
-			if (keyPair != NULL)
-			{
-				BioSharedPointer privateKey = CreateKey(rsa, false);
-
-				if (privateKey != NULL)
-				{
-					std::string privateKeyPem = CreatePemKey(privateKey);
-
-					if (!privateKeyPem.empty())
-					{
-						verified = VerifyKey(privateKeyPem, false);
-
-						keyPair->PrivateKey = privateKey;
-					}
-				}
-
-				BioSharedPointer publicKey = CreateKey(rsa, true);
-
-				if (publicKey != NULL)
-				{
-					std::string publicKeyPem = CreatePemKey(publicKey);
-
-					if (!publicKeyPem.empty())
-					{
-						verified = VerifyKey(publicKeyPem, true);
-
-						keyPair->PublicKey = publicKey;
-					}
-				}
-			}
-		}
-
-		return keyPair;
-	}
-
 	std::vector<char> Cryptography::SignData(
 		std::string privateKey,
 		std::string plainText)
