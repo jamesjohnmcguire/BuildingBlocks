@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "chainblocker.h"
+#include "CryptographicKey.h"
 #include "TransactionInput.h"
 
 namespace ChainBlocker
@@ -25,15 +26,15 @@ namespace ChainBlocker
 			DllExport bool VerifySignature();
 
 			DllExport Transaction(
-				std::string senderPrivateKey,
-				std::string recipientPublicKey,
+				std::string senderPrivateKeyPem,
+				std::string recipientPublicKeyPem,
 				int amount,
 				std::vector<TransactionInput> inputs);
 
 		private:
 			std::string transactionId;
-			std::string senderPrivateKey;
-			std::string recipientPublicKey;
+			CryptographicKey senderPrivateKey;
+			CryptographicKey recipientPublicKey;
 			int amount;
 			std::string signature;
 			std::vector<TransactionInput> inputs;

@@ -4,7 +4,7 @@
     <CharacterSet>Unicode</CharacterSet>
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <Keyword>Win32Proj</Keyword>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
     <ProjectGuid>{fa753d2f-e2f4-435f-b3d0-319b06cd6c44}</ProjectGuid>
     <ProjectName>ChainBlockerLibrary</ProjectName>
@@ -67,25 +67,21 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)\Bin\$(Configuration)\$(PlatformTarget)\</OutDir>
     <RunCodeAnalysis>true</RunCodeAnalysis>
-    <IncludePath>$(userprofile)\Data\Clients\DigitalZenWorks\vcpkg\packages\openssl-windows_x64-windows\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)\Bin\$(Configuration)\$(PlatformTarget)\</OutDir>
     <RunCodeAnalysis>true</RunCodeAnalysis>
-    <IncludePath>$(userprofile)\Data\Clients\DigitalZenWorks\vcpkg\packages\openssl-windows_x64-windows\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)\Bin\$(Configuration)\$(PlatformTarget)\</OutDir>
     <RunCodeAnalysis>true</RunCodeAnalysis>
-    <IncludePath>$(userprofile)\Data\Clients\DigitalZenWorks\vcpkg\packages\openssl-windows_x64-windows\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)\Bin\$(Configuration)\$(PlatformTarget)\</OutDir>
     <RunCodeAnalysis>true</RunCodeAnalysis>
-    <IncludePath>$(userprofile)\Data\Clients\DigitalZenWorks\vcpkg\packages\openssl-windows_x64-windows\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

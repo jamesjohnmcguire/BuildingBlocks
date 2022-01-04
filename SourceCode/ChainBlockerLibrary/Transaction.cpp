@@ -27,12 +27,15 @@ namespace ChainBlocker
 
 	std::string Transaction::GetSender()
 	{
-		return senderPrivateKey;
+		std::string senderPrivateKeyPem = senderPrivateKey.GetPrivateKeyPem();
+		return senderPrivateKeyPem;
 	}
 
 	std::string Transaction::GetRecipient()
 	{
-		return recipientPublicKey;
+		std::string recipientPublicKeyPem =
+			senderPrivateKey.GetPublicKeyPem(PemFormatType::Pkcs1Rsa);
+		return recipientPublicKeyPem;
 	}
 
 	std::string Transaction::GetSignature()
@@ -46,12 +49,12 @@ namespace ChainBlocker
 	}
 
 	Transaction::Transaction(
-		std::string senderPrivateKey,
-		std::string recipientPublicKey,
+		std::string senderPrivateKeyPem,
+		std::string recipientPublicKeyPem,
 		int amount,
 		std::vector<TransactionInput> inputs)
-		:	senderPrivateKey(senderPrivateKey),
-			recipientPublicKey(recipientPublicKey),
+		:	senderPrivateKey(CryptographicKey(senderPrivateKeyPem)),
+			recipientPublicKey(CryptographicKey(recipientPublicKeyPem, true)),
 			amount(amount),
 			inputs(inputs)
 	{
@@ -62,8 +65,12 @@ namespace ChainBlocker
 
 	void Transaction::CreateSignature()
 	{
+		std::string senderPrivateKeyPem = senderPrivateKey.GetPrivateKeyPem();
+		std::string recipientPublicKeyPem =
+			recipientPublicKey.GetPublicKeyPem(PemFormatType::Pkcs1Rsa);
+
 		std::stringstream streamBuffer;
-		streamBuffer << senderPrivateKey << recipientPublicKey << amount;
+		streamBuffer << senderPrivateKeyPem << recipientPublicKeyPem << amount;
 
 		std::string buffer = streamBuffer.str();
 		signature = sha256(buffer);
