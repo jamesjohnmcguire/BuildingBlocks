@@ -32,7 +32,7 @@ struct RsaDeleter
 	{
 		if (rsa)
 		{
-			RSA_free(rsa);
+			 EVP_PKEY_free(rsa);
 			rsa = nullptr;
 		}
 	}
