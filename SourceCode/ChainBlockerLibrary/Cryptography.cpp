@@ -88,6 +88,27 @@ namespace ChainBlocker
 		CRYPTO_cleanup_all_ex_data();
 	}
 
+	EvpKeySharedPointer Cryptography::CreateEvpKey()
+	{
+		EvpKeySharedPointer evpKey = nullptr;
+
+		//EVP_PKEY* some = nullptr;
+		EVP_PKEY* evpRawKey = EVP_PKEY_new();
+
+		EVP_PKEY_CTX* context;
+
+		context = EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, NULL);
+
+		int successCode = EVP_PKEY_generate(context, &evpRawKey);
+
+		if (successCode == 1)
+		{
+			evpKey.reset(evpRawKey);
+		}
+
+		return evpKey;
+	}
+
 	BioPointer Cryptography::CreateKey(
 		RsaSharedPointer rsaKey, bool isPublicKey)
 	{
@@ -152,6 +173,7 @@ namespace ChainBlocker
 		if (successCode == 1)
 		{
 			RSA* rsa = RSA_new();
+			EVP_PKEY* some = EVP_PKEY_new();
 
 			successCode = RSA_generate_key_ex(rsa, bits, bigNumber, nullptr);
 

@@ -36,6 +36,7 @@ namespace ChainBlocker
 			DllExport ~Cryptography();
 
 		private:
+			EvpKeySharedPointer CreateEvpKey();
 			BioPointer CreateKey(RsaSharedPointer rsaKey, bool isPublicKey);
 			std::string CreatePemKey(BioSharedPointer key);
 			RsaSharedPointer CreateRsaKey();
