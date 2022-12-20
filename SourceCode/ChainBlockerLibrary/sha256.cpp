@@ -3,6 +3,7 @@
 #include <cstring>
 #include <fstream>
 #include <stdio.h>
+
 #include "sha256.h"
 
 namespace ChainBlocker
