@@ -32,7 +32,9 @@ struct RsaDeleter
 	{
 		if (rsa)
 		{
-			 EVP_PKEY_free(rsa);
+#ifdef OPENSSL-1
+			EVP_PKEY_free(rsa);
+#endif
 			rsa = nullptr;
 		}
 	}

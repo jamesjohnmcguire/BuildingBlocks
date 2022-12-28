@@ -127,6 +127,7 @@ BioPointer CryptographicKey::CreateKey(
 
 	if (isPublicKey == true)
 	{
+#ifdef OPENSSL-1
 		if (formatType == PemFormatType::Pkcs1Rsa)
 		{
 			// -----BEGIN RSA PUBLIC KEY-----
@@ -137,6 +138,9 @@ BioPointer CryptographicKey::CreateKey(
 			// -----BEGIN PUBLIC KEY-----
 			successCode = PEM_write_bio_RSA_PUBKEY(bioKey, rsaKey.get());
 		}
+#else
+		successCode = 0;
+#endif
 	}
 	else
 	{

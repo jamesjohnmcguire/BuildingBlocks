@@ -172,7 +172,11 @@ namespace ChainBlocker
 
 		if (successCode == 1)
 		{
+#ifdef OPENSSL-1
 			RSA* rsa = RSA_new();
+#else
+			RSA* rsa = nullptr;
+#endif
 			EVP_PKEY* some = EVP_PKEY_new();
 
 			successCode = RSA_generate_key_ex(rsa, bits, bigNumber, nullptr);

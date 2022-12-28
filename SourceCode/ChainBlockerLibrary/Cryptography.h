@@ -8,9 +8,14 @@
 #include <openssl/pem.h>
 #include <openssl/rsa.h>
 
+#include "gtest/gtest.h"
+
 #include "chainblocker.h"
 #include "OpenSslPointers.h"
 #include "CryptographicKeyPair.h"
+
+#define FRIEND_TEST(test_case_name, test_name)\
+friend class test_case_name##_##test_name##_Test
 
 namespace ChainBlocker
 {
@@ -36,6 +41,7 @@ namespace ChainBlocker
 			DllExport ~Cryptography();
 
 		private:
+			FRIEND_TEST(Cryptography, CreateEvpKey);
 			EvpKeySharedPointer CreateEvpKey();
 			BioPointer CreateKey(RsaSharedPointer rsaKey, bool isPublicKey);
 			std::string CreatePemKey(BioSharedPointer key);
