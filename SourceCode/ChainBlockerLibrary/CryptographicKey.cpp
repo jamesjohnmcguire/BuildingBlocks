@@ -125,9 +125,9 @@ BioPointer CryptographicKey::CreateKey(
 	const BIO_METHOD* method = BIO_s_mem();
 	BIO* bioKey = BIO_new(method);
 
+#ifdef OPENSSL-1
 	if (isPublicKey == true)
 	{
-#ifdef OPENSSL-1
 		if (formatType == PemFormatType::Pkcs1Rsa)
 		{
 			// -----BEGIN RSA PUBLIC KEY-----
@@ -138,15 +138,15 @@ BioPointer CryptographicKey::CreateKey(
 			// -----BEGIN PUBLIC KEY-----
 			successCode = PEM_write_bio_RSA_PUBKEY(bioKey, rsaKey.get());
 		}
-#else
-		successCode = 0;
-#endif
 	}
 	else
 	{
 		successCode = PEM_write_bio_RSAPrivateKey(
 			bioKey, rsaKey.get(), NULL, NULL, 0, NULL, NULL);
 	}
+#else
+	successCode = 0;
+#endif
 
 	if (successCode != 1)
 	{
@@ -191,9 +191,14 @@ RsaSharedPointer CryptographicKey::CreateRsaKey()
 
 	if (successCode == 1)
 	{
+#ifdef OPENSSL-1
 		RSA* rsa = RSA_new();
 
 		successCode = RSA_generate_key_ex(rsa, bits, bigNumber, nullptr);
+#else
+		RSA* rsa = nullptr;
+		successCode = -1;
+#endif
 
 		if (successCode == 1)
 		{
