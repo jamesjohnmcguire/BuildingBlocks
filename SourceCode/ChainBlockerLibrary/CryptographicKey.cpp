@@ -224,6 +224,7 @@ RsaSharedPointer CryptographicKey::GetRsaKey(
 	{
 		RSA* rsa = nullptr;
 
+#ifdef OPENSSL-1
 		if (isPublicKey == true)
 		{
 			rsa = PEM_read_bio_RSA_PUBKEY(bioKey, &rsa, nullptr, nullptr);
@@ -233,6 +234,7 @@ RsaSharedPointer CryptographicKey::GetRsaKey(
 		{
 			rsa = PEM_read_bio_RSAPrivateKey(bioKey, &rsa, nullptr, nullptr);
 		}
+#endif
 
 		rsaKey.reset(rsa);
 	}
