@@ -211,3 +211,11 @@ TEST(Cryptography, PublicKeyDerivation)
 
 	ASSERT_EQ(result, 0);
 }
+
+TEST(CryptographyKey, Success)
+{
+	std::unique_ptr<CryptographicKey> key =
+		CryptographicKey::Create(AlgorythmType::Rsa);
+
+	EXPECT_NE(key, nullptr);
+}
