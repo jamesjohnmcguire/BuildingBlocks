@@ -88,16 +88,15 @@ namespace ChainBlocker
 		CRYPTO_cleanup_all_ex_data();
 	}
 
-	EvpKeySharedPointer Cryptography::CreateEvpKey()
+	EvpKeyPointer Cryptography::CreateEvpKey()
 	{
-		EvpKeySharedPointer evpKey = nullptr;
+		EvpKeyPointer evpKey = nullptr;
 
-		//EVP_PKEY* some = nullptr;
-		EVP_PKEY* evpRawKey = EVP_PKEY_new();
+		EVP_PKEY* evpRawKey = nullptr;
 
-		EVP_PKEY_CTX* context;
+		EVP_PKEY_CTX* context = EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, NULL);
 
-		context = EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, NULL);
+		context = EVP_PKEY_CTX_new_from_name(NULL, "DH", NULL);
 
 		int successCode = EVP_PKEY_generate(context, &evpRawKey);
 
@@ -119,7 +118,7 @@ namespace ChainBlocker
 		const BIO_METHOD* method = BIO_s_mem();
 		BIO* bioKey = BIO_new(method);
 
-#ifdef OPENSSL-1
+#ifdef OPENSSL1
 		if (isPublicKey == true)
 		{
 			successCode = PEM_write_bio_RSAPublicKey(bioKey, rsaKey.get());
@@ -176,14 +175,14 @@ namespace ChainBlocker
 
 		if (successCode == 1)
 		{
-#ifdef OPENSSL-1
+#ifdef OPENSSL1
 			RSA* rsa = RSA_new();
 #else
 			RSA* rsa = nullptr;
 #endif
 			EVP_PKEY* some = EVP_PKEY_new();
 
-#ifdef OPENSSL-1
+#ifdef OPENSSL1
 			successCode = RSA_generate_key_ex(rsa, bits, bigNumber, nullptr);
 #else
 			successCode = 0;
@@ -212,7 +211,7 @@ namespace ChainBlocker
 		{
 			RSA* rsa = nullptr;
 
-#ifdef OPENSSL-1
+#ifdef OPENSSL1
 			if (isPublicKey == true)
 			{
 				rsa = PEM_read_bio_RSA_PUBKEY(bioKey, &rsa, nullptr, nullptr);
@@ -239,7 +238,7 @@ namespace ChainBlocker
 		unsigned char* signedData = NULL;
 
 		EVP_MD_CTX* context = EVP_MD_CTX_create();
-#ifdef OPENSSL-1
+#ifdef OPENSSL1
 		EVP_PKEY* evpPrivateKey = EVP_PKEY_new();
 		EVP_PKEY_assign_RSA(evpPrivateKey, privateKey.get());
 #else
@@ -285,7 +284,7 @@ namespace ChainBlocker
 
 		EVP_MD_CTX* context = EVP_MD_CTX_create();
 		EVP_PKEY* evpPublicKey = EVP_PKEY_new();
-#ifdef OPENSSL-1
+#ifdef OPENSSL1
 		EVP_PKEY_assign_RSA(evpPublicKey, publicKey);
 #endif
 
