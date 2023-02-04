@@ -156,15 +156,13 @@ TEST(Base64, EncodeDecodeAsciiNewLine)
 	ASSERT_EQ(result, 0);
 }
 
-#ifdef FRIEND_TESTING
 TEST(Cryptography, CreateEvpKey)
 {
 	Cryptography cryptography = Cryptography();
-	auto result = cryptography.CreateEvpKey();
+	EvpKeyPointer result = cryptography.CreateEvpKey();
 
 	EXPECT_NE(result, nullptr);
 }
-#endif
 
 TEST(Cryptography, SignData)
 {
