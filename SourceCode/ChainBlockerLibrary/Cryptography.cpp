@@ -91,18 +91,20 @@ namespace ChainBlocker
 	EvpKeyPointer Cryptography::CreateEvpKey()
 	{
 		EvpKeyPointer evpKey = nullptr;
-
 		EVP_PKEY* evpRawKey = nullptr;
 
 		EVP_PKEY_CTX* context = EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, NULL);
 
-		context = EVP_PKEY_CTX_new_from_name(NULL, "DH", NULL);
-
-		int successCode = EVP_PKEY_generate(context, &evpRawKey);
+		int successCode = EVP_PKEY_keygen_init(context);
 
 		if (successCode == 1)
 		{
-			evpKey.reset(evpRawKey);
+			successCode = EVP_PKEY_generate(context, &evpRawKey);
+
+			if (successCode == 1)
+			{
+				evpKey.reset(evpRawKey);
+			}
 		}
 
 		return evpKey;
