@@ -156,10 +156,10 @@ TEST(Base64, EncodeDecodeAsciiNewLine)
 	ASSERT_EQ(result, 0);
 }
 
-TEST(Cryptography, CreateEvpKey)
+TEST(Cryptography, CreateRsaKey)
 {
 	Cryptography cryptography = Cryptography();
-	EvpKeyPointer result = cryptography.CreateEvpKey();
+	EvpKeyPointer result = cryptography.CreateRsaKey();
 
 	EXPECT_NE(result, nullptr);
 }
