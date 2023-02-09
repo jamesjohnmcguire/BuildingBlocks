@@ -40,20 +40,18 @@ namespace ChainBlocker
 				std::string signatureBase64);
 			DllExport ~Cryptography();
 
-			// FRIEND_TEST(Cryptography, CreateEvpKey);
-			DllExport EvpKeyPointer CreateEvpKey();
+			DllExport EvpKeyPointer CreateRsaKey();
 
 		private:
 			BioPointer CreateKey(RsaSharedPointer rsaKey, bool isPublicKey);
 			std::string CreatePemKey(BioSharedPointer key);
-			RsaSharedPointer CreateRsaKey();
-			RsaPointer GetRsaKey(std::string privateKey, bool isPublicKey);
+			EvpKeyPointer GetRsaKey(std::string privateKey, bool isPublicKey);
 			unsigned char* RsaSignData(
-				RsaPointer privateKey,
+				EvpKeyPointer privateKey,
 				const unsigned char* data,
 				size_t dataLength,
 				size_t* outputLength);
-			bool RsaVerifySignature(RSA* publicKey,
+			bool RsaVerifySignature(EVP_PKEY* publicKey,
 				const unsigned char* data,
 				size_t dataLength,
 				const std::vector<unsigned char> dataHash,

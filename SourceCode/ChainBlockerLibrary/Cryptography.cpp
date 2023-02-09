@@ -42,7 +42,7 @@ namespace ChainBlocker
 	{
 		size_t outputLength;
 
-		RsaPointer privateRsaKey = GetRsaKey(privateKey, false);
+		EvpKeyPointer privateRsaKey = GetRsaKey(privateKey, false);
 
 		unsigned char* data = (unsigned char*)plainText.c_str();
 		size_t dataLength = plainText.length();
@@ -63,7 +63,7 @@ namespace ChainBlocker
 		size_t inputLength = signatureBase64.size();
 		size_t outputLength;
 
-		RsaPointer publicRSA = GetRsaKey(publicKey, true);
+		EvpKeyPointer publicRSA = GetRsaKey(publicKey, true);
 
 		std::vector<unsigned char> encodedData =
 			Base64::Decode(signatureBase64, inputLength, &outputLength);
@@ -88,7 +88,7 @@ namespace ChainBlocker
 		CRYPTO_cleanup_all_ex_data();
 	}
 
-	EvpKeyPointer Cryptography::CreateEvpKey()
+	EvpKeyPointer Cryptography::CreateRsaKey()
 	{
 		EvpKeyPointer evpKey = nullptr;
 		EVP_PKEY* evpRawKey = nullptr;
@@ -165,66 +165,30 @@ namespace ChainBlocker
 		return keyPem;
 	}
 
-	RsaSharedPointer Cryptography::CreateRsaKey()
+	EvpKeyPointer Cryptography::GetRsaKey(
+		std::string privateKey, bool isPublicKey)
 	{
-		RsaSharedPointer rsaKey = nullptr;
-		BIGNUM* bigNumber = nullptr;
-		unsigned long algorythmType = RSA_F4;
-		int bits = 2048;
-
-		bigNumber = BN_new();
-		int successCode = BN_set_word(bigNumber, algorythmType);
-
-		if (successCode == 1)
-		{
-#ifdef OPENSSL1
-			RSA* rsa = RSA_new();
-#else
-			RSA* rsa = nullptr;
-#endif
-			EVP_PKEY* some = EVP_PKEY_new();
-
-#ifdef OPENSSL1
-			successCode = RSA_generate_key_ex(rsa, bits, bigNumber, nullptr);
-#else
-			successCode = 0;
-#endif
-
-			if (successCode == 1)
-			{
-				rsaKey.reset(rsa);
-			}
-		}
-
-		BN_free(bigNumber);
-		bigNumber = nullptr;
-
-		return rsaKey;
-	}
-
-	RsaPointer Cryptography::GetRsaKey(std::string privateKey, bool isPublicKey)
-	{
-		RsaPointer rsaKey = nullptr;
+		EvpKeyPointer rsaKey = nullptr;
 
 		const char* string = privateKey.c_str();
 		BIO* bioKey = BIO_new_mem_buf((void*)string, -1);
 
 		if (bioKey != nullptr)
 		{
-			RSA* rsa = nullptr;
+			EVP_PKEY* evpKey = nullptr;
 
-#ifdef OPENSSL1
 			if (isPublicKey == true)
 			{
-				rsa = PEM_read_bio_RSA_PUBKEY(bioKey, &rsa, nullptr, nullptr);
+				evpKey =
+					PEM_read_bio_PUBKEY(bioKey, &evpKey, nullptr, nullptr);
 			}
 			else
 			{
-				rsa = PEM_read_bio_RSAPrivateKey(bioKey, &rsa, nullptr, nullptr);
+				evpKey =
+					PEM_read_bio_PrivateKey(bioKey, &evpKey, nullptr, nullptr);
 			}
-#endif
 
-			rsaKey.reset(rsa);
+			rsaKey.reset(evpKey);
 		}
 
 		return rsaKey;
@@ -232,7 +196,7 @@ namespace ChainBlocker
 
 	// caller is responsible for freeing returned data.
 	unsigned char* Cryptography::RsaSignData(
-		RsaPointer privateKey,
+		EvpKeyPointer privateKey,
 		const unsigned char* data,
 		size_t dataLength,
 		size_t* outputLength)
@@ -274,7 +238,7 @@ namespace ChainBlocker
 
 	// caller is responsible for freeing returned data.
 	bool Cryptography::RsaVerifySignature(
-		RSA* publicKey,
+		EVP_PKEY* publicKey,
 		const unsigned char* data,
 		size_t dataLength,
 		const std::vector<unsigned char> dataHash,
