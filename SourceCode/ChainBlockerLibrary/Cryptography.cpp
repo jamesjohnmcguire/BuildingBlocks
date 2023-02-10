@@ -204,12 +204,8 @@ namespace ChainBlocker
 		unsigned char* signedData = NULL;
 
 		EVP_MD_CTX* context = EVP_MD_CTX_create();
-#ifdef OPENSSL1
-		EVP_PKEY* evpPrivateKey = EVP_PKEY_new();
-		EVP_PKEY_assign_RSA(evpPrivateKey, privateKey.get());
-#else
-		EVP_PKEY* evpPrivateKey = nullptr;
-#endif
+
+		EVP_PKEY* evpPrivateKey = privateKey.get();
 
 		int successCode = EVP_DigestSignInit(
 			context, NULL, EVP_sha256(), NULL, evpPrivateKey);
@@ -255,7 +251,7 @@ namespace ChainBlocker
 #endif
 
 		int successCode = EVP_DigestVerifyInit(
-			context, NULL, EVP_sha256(), NULL, evpPublicKey);
+			context, NULL, EVP_sha256(), NULL, publicKey);
 
 		if (successCode > 0)
 		{
