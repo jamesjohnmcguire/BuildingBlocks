@@ -8,8 +8,6 @@
 #include <openssl/pem.h>
 #include <openssl/rsa.h>
 
-#include "gtest/gtest.h"
-
 #include "chainblocker.h"
 #include "OpenSslPointers.h"
 #include "CryptographicKeyPair.h"
