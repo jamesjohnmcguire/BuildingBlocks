@@ -1,4 +1,4 @@
 CD %~dp0
-CD ..\..
+CD ..\SourceCode
 
 msbuild ChainBlocker.sln
