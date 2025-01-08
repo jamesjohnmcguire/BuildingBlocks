@@ -91,6 +91,8 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;DLL_EXPORTS;CHAINBLOCKERLIBRARY_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <WarningLevel>Level3</WarningLevel>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <EnableUAC>false</EnableUAC>
@@ -106,6 +108,8 @@
       <PreprocessorDefinitions>_DEBUG;DLL_EXPORTS;CHAINBLOCKERLIBRARY_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <WarningLevel>Level3</WarningLevel>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <EnableUAC>false</EnableUAC>
@@ -123,6 +127,8 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;DLL_EXPORTS;CHAINBLOCKERLIBRARY_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <WarningLevel>Level3</WarningLevel>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -142,6 +148,8 @@
       <PreprocessorDefinitions>NDEBUG;DLL_EXPORTS;CHAINBLOCKERLIBRARY_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <WarningLevel>Level3</WarningLevel>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
