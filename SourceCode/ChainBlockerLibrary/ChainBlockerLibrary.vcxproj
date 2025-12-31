@@ -4,7 +4,7 @@
     <CharacterSet>Unicode</CharacterSet>
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <Keyword>Win32Proj</Keyword>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
     <ProjectGuid>{fa753d2f-e2f4-435f-b3d0-319b06cd6c44}</ProjectGuid>
     <ProjectName>ChainBlockerLibrary</ProjectName>
